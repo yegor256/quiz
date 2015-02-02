@@ -6,12 +6,9 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
+  public final File file;
+  public Parser(File f) {
     file = f;
-  }
-  public synchronized File getFile() {
-    return file;
   }
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
