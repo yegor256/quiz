@@ -7,38 +7,37 @@ import java.io.IOException;
  */
 public class Parser {
   
-  public String getContent(File file) throws IOException {
+  protected interface Condition {
+		public boolean check(int input);
+	}
+  
+  private String getContent(File file, Condition condition) {
     FileInputStream i = null;
     try {
       i = new FileInputStream(file);
       StringBuffer output = new StringBuffer();
       int data;
       while ((data = i.read()) > 0) {
-        output.append((char) data);
+        if (condition == null || condition.check(data)) {
+          output.append((char) data);
+        }
       }
       return output.toString();
     } finally {
       if (i != null) { try {i.close();} catch (IOException e) {} }
     }
+  }
+  
+  public String getContent(File file) throws IOException {
+    return getContent(file, null);
     
   }
   public String getContentWithoutUnicode(File file) throws IOException {
-    FileInputStream i = null;
-    try {
-    i = new FileInputStream(file);
-    StringBuffer output = new StringBuffer();
-    int data;
-    
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output.append((char) data);
+    return getContent(file, new Condition(){
+      public boolean check(int input) {
+        return input < 0x80;
       }
-    }
-    return output.toString();
-    } finally {
-      if (i != null) { try {i.close();} catch (IOException e) {} }
-    }
-    
+    });
   }
   public void  saveContent(String content, File file) throws IOException {
     FileOutputStream o = null;
