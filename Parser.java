@@ -46,7 +46,7 @@ public class Parser {
     }
     
   }
-  public void saveContent(String content) throws IOException {
+  public synchronized void  saveContent(String content) throws IOException {
     FileOutputStream o = null;
     try {
       o = new FileOutputStream(getFile());
