@@ -8,10 +8,10 @@ import java.io.IOException;
 public class Parser {
   
   protected interface Condition {
-		public boolean check(int input);
-	}
+  	public boolean check(int input);
+  }
   
-  private String getContent(File file, Condition condition) {
+  private String getContent(File file, Condition condition) throws IOException {
     FileInputStream i = null;
     try {
       i = new FileInputStream(file);
