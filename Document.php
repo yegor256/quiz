@@ -27,6 +27,12 @@ class Document {
         return $rows;
     }
 
+    public static function getUserDocuments($user) {
+        $db = Database::getInstance();
+        $rows = $db->query('SELECT * FROM document WHERE username = ' . mysqli_real_escape_string($user));
+        return $rows;
+    }
+
     private function getDocument() {
         $db = Database::getInstance();
         $row = $db->query('SELECT * FROM document WHERE name = "' . mysqli_real_escape_string($this->name) . '" LIMIT 1');
@@ -44,13 +50,7 @@ class User {
     }
 
     public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this) {
-                $list[] = $doc;
-            }
-        }
-        return $list;
+        return Document::getUserDocuments($this->name);
     }
 
 }
