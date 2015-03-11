@@ -22,7 +22,9 @@ class Document {
     }
 
     public static function getAllDocuments() {
-        // to be implemented later
+        $db = Database::getInstance();
+        $rows = $db->query('SELECT * FROM document');
+        return $rows;
     }
 
     private function getDocument() {
