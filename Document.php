@@ -12,19 +12,23 @@ class Document {
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+        $doc = $this->getDocument();
         return $doc['title'];
     }
 
     public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+        $doc = $this->getDocument();
         return $doc['content'];
     }
 
     public static function getAllDocuments() {
         // to be implemented later
+    }
+
+    private function getDocument() {
+        $db = Database::getInstance();
+        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+        return $row;
     }
 
 }
