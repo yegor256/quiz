@@ -27,7 +27,7 @@ class Document {
 
     private function getDocument() {
         $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+        $row = $db->query('SELECT * FROM document WHERE name = "' . mysqli_real_escape_string($this->name) . '" LIMIT 1');
         return $row;
     }
 
