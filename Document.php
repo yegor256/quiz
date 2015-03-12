@@ -5,8 +5,10 @@ class Document {
 
     public $name;
 
-    public function init($name, User $user) {
-        assert(strlen($name) > 5);
+    public function __construct($name, User $user) {
+	if (strlen($name) < 5) {
+            throw new \Exception('Document name min 6 chars'); 
+        }
         $this->user = $user;
         $this->name = $name;
     }
@@ -32,8 +34,7 @@ class Document {
 class User {
 
     public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
+        $doc = new Document($name, $this);
         return $doc;
     }
 
