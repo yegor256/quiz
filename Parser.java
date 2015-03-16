@@ -1,42 +1,36 @@
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+  private final File file;
+
+  public Parser(File file) {
+    this.file = file;
   }
-  public synchronized File getFile() {
+
+  public File getFile() {
     return file;
   }
+
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+    return new String(Files.readAllBytes(file.toPath()));
   }
+
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
+    return getContent().replaceAll("[^\\x00-\\x7F]", ""); // remove all non-ascii characters
   }
+
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
+    Files.write(file.toPath(), content.getBytes(), StandardOpenOption.APPEND);
+  }
+
+  public static void main(String[] args) throws IOException {
+    Parser p = new Parser(new File("D:\\work\\quiz\\README.md"));
+    System.out.println(p.getContentWithoutUnicode());
   }
 }
