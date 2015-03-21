@@ -40,7 +40,8 @@ public class Parser {
 		return output.toString();
 	}
 
-	public synchronized String getContentWithoutUnicode() {
+
+	public synchronized String getContentWithoutUnicode() throws IOException {
 		StringBuffer output = new StringBuffer();
 		FileInputStream i = null;
 		try {
@@ -65,7 +66,7 @@ public class Parser {
 		return output.toString();
 	}
 
-	public synchronized void saveContent(String content) {
+	public synchronized void saveContent(String content) throws IOException {
 		FileOutputStream o = null; 
 		try{
 			o = new FileOutputStream(file);
