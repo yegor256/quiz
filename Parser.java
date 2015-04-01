@@ -1,42 +1,71 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException; 
+import com.sun.org.apache.regexp.internal.recompile;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Scanner;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    private Path filePath;
+
+    public synchronized void setFile(File file) {
+        filePath = file.toPath();
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public synchronized File getFile() {
+        return filePath.toFile();
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public synchronized Path getPath() {
+        return this.filePath;
     }
-  }
+
+    public synchronized void setPath(Path path) {
+        this.filePath = path;
+    }
+
+
+    public Parser(Path path) {
+        this.filePath = path;
+    }
+
+    /**
+     * @return
+     * @throws IOException
+     * @throws java.lang.NullPointerException if file = null
+     * @throws java.io.FileNotFoundException  if file not exists
+     */
+    public synchronized String getContent() throws IOException {
+        Charset charset = Charset.defaultCharset();
+        Scanner scanner = new Scanner(filePath, charset.name());
+        scanner.next();
+        StringBuilder destinationStringBuilder = new StringBuilder();
+        String read = null;
+        while ((read = scanner.next()) != null) {
+            destinationStringBuilder.append(read);
+        }
+        return destinationStringBuilder.toString();
+    }
+
+    public synchronized String getContentWithoutUnicode() throws IOException {
+        BufferedReader bufferedReader = Files.newBufferedReader(filePath, Charset.defaultCharset());
+        StringBuilder destinationStringBuilder = new StringBuilder();
+        int data;
+        while ((data = bufferedReader.read()) > 0 && (data < 0x80)) {
+            destinationStringBuilder.append((char) data);
+        }
+        return destinationStringBuilder.toString();
+    }
+
+    public synchronized void saveContent(String content) throws IOException {
+        BufferedWriter bufferedWriter = Files.newBufferedWriter(filePath, Charset.defaultCharset());
+        bufferedWriter.write(content);
+        bufferedWriter.flush();
+    }
 }
