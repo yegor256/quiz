@@ -6,11 +6,11 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public class Parser {
+public class FileParser {
     private static final int UNICODE_LIMIT = 0x80;
     private File file;
 
-    public Parser(File file) {
+    public FileParser(File file) {
         this.file = file;
     }
 
@@ -24,6 +24,13 @@ public class Parser {
 
     public String getContentWithoutUnicode() throws IOException {
         return getContent(true);
+    }
+
+    public void saveContent(String content) throws IOException {
+        FileOutputStream outputStream = new FileOutputStream(file);
+        for (int i = 0; i < content.length(); i++) {
+            outputStream.write(content.charAt(i));
+        }
     }
 
     private String getContent(boolean withoutUnicode) throws IOException {
@@ -41,13 +48,5 @@ public class Parser {
             }
         }
         return output;
-    }
-
-
-    public void saveContent(String content) throws IOException {
-        FileOutputStream outputStream = new FileOutputStream(file);
-        for (int i = 0; i < content.length(); i += 1) {
-            outputStream.write(content.charAt(i));
-        }
     }
 }
