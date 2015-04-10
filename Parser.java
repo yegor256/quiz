@@ -42,7 +42,7 @@ public class Parser {
     StringBuilder sb = new StringBuilder();
     try(FileInputStream i = new FileInputStream(file)){
       int data;
-      while ((data = i.read()) > 0) {
+      while ((data = i.read()) >= 0) {
         if (data < 0x80) {
           sb.append(data);
         }
