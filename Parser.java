@@ -6,37 +6,64 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+   
+    //make file object immutable
+    private final File file;
+  
+    public Parser(File file) {
+		this.file = file;
+   }
+	
+	/**
+     * returns the file object
+     * @return
+     */
+	public synchronized File getFile() {
+		return file;
+	}
+  
+    /**
+     * returns the content of the file as a string
+     * @return
+     * @throws IOException
+     */  
+	public String getContent() throws IOException {
+        return getContent(false);
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+	/**
+     * returns the content of the file without unicode range
+     * @return
+     * @throws IOException
+     */
+    public String getContentWithoutUnicode() throws IOException {
+        return getContent(true);
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    private String getContent(boolean withoutUnitcode) throws IOException {
+
+        StringBuilder output = new StringBuilder();
+        //try with resources
+        try(FileInputStream i = new FileInputStream(file)) {
+            int data;
+            while((data = i.read()) > 0){
+                if (!withoutUnitcode || data < 0x80) {
+                    output.append((char) data);
+                }
+            }
+        }
+        return output.toString();
     }
-  }
+
+	 /**
+     * saves the given string to the file
+     * @param content
+     * @throws IOException
+     */
+    public void saveContent(String content) throws IOException {
+
+        try(FileOutputStream o = new FileOutputStream(file)) {
+            o.write(content.getBytes());
+        }
+    }
 }
