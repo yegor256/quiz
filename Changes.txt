@@ -1,0 +1,5 @@
+We used BufferedReader class instead of FileInputStream  directly.
+
+To get the data from file, we are using readLine() method, in your Parser class data has been read character by character, finding its int value and converting in to character. So we removed that.
+
+For printing logic we defined a new method called readLine(BufferedReader br).
