@@ -22,6 +22,7 @@ public class Parser {
     }
     return output;
   }
+  
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
