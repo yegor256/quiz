@@ -38,5 +38,6 @@ public class Parser {
   public void saveContent(String content) throws IOException {
     OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file));
     writer.write(content);
+    writer.close();
   }
 }
