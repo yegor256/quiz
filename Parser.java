@@ -22,7 +22,15 @@ public class Parser {
     }
     return output;
   }
-  public String getContentWithoutUnicode() throws IOException {
+  public void saveContent(String content) throws IOException {
+    FileOutputStream o = new FileOutputStream(file);
+    for (int i = 0; i < content.length(); i += 1) {
+      o.write(content.charAt(i));
+    }
+  }
+}
+public class WithoutUnicodeParser extends Parser {
+  public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
@@ -32,11 +40,5 @@ public class Parser {
       }
     }
     return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
   }
 }
