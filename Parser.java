@@ -3,8 +3,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 /**
- * This class is thread safe.
- */
+* This class is thread safe.
+*/
 public class Parser {
   private File file;
   public synchronized void setFile(File f) {
@@ -14,22 +14,28 @@ public class Parser {
     return file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
     String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    if(file != null) {
+        FileInputStream i = new FileInputStream(file);
+        int data;
+        while ((data = i.read()) > 0) {
+            output += (char) data;
+        }
+    i.close();
     }
     return output;
   }
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
     String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+    if(file != null) {
+        FileInputStream i = new FileInputStream(file);
+        int data;
+        while ((data = i.read()) > 0) {
+            if (data < 0x80) {
+               output += (char) data;
+           }
+        }
+        i.close();
     }
     return output;
   }
@@ -38,5 +44,6 @@ public class Parser {
     for (int i = 0; i < content.length(); i += 1) {
       o.write(content.charAt(i));
     }
+    o.close();
   }
-}
+} 
