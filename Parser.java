@@ -1,42 +1,71 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+
+
 /**
- * This class is thread safe.
+ * This class is thread safe in a matter that data stored in it is safe,
+ * but it's not safe to read/write data from a single file simultaneously.
+ *
+ * Next step: utilize NIO API for file reading/writing
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    private static final CharsetEncoder asciiEncoder =
+    Charset.forName("US-ASCII").newEncoder();
+    
+    private File file;
+    
+    public synchronized void setFile(File f) {
+        file = f;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+    
+    public synchronized File getFile() {
+        return file;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    
+    public String getContent() throws IOException {
+        File local;
+        synchronized (this) {
+            local = this.file;
+        }
+        
+        try (FileInputStream fis = new FileInputStream(local);
+             StringWriter output = new StringWriter(fis.available())) {
+            int data;
+            while ((data = fis.read()) > 0) {
+                output.write(data);
+            }
+            return output.toString();
+        }
     }
-  }
+    
+    public String getContentWithoutUnicode() throws IOException {
+        File local;
+        synchronized (this) {
+            local = this.file;
+        }
+        
+        try (FileInputStream fis = new FileInputStream(local);
+             StringWriter output = new StringWriter(fis.available())) {
+            int data;
+            while ((data = fis.read()) > 0) {
+                if (asciiEncoder.canEncode((char)data)) {
+                    output.write(data);
+                }
+            }
+            return output.toString();
+        }
+    }
+    
+    public void saveContent(String content) throws IOException {
+        File local;
+        synchronized (this) {
+            local = this.file;
+        }
+        
+        try (FileWriter writer = new FileWriter(local);
+             BufferedWriter output = new BufferedWriter(writer)) {
+            output.write(content);
+        }
+    }
 }
