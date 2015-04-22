@@ -2,13 +2,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.charset.Charset;
-import java.nio.ByteBuffer;
-import java.util.stream.IntStream;
-import java.util.Arrays;
-//import java.io.ByteArrayInputStream;
 /**
  * This class is thread safe.
  */
