@@ -15,19 +15,29 @@ public class Parser {
   }
   public String getContent() throws IOException {
     String output = "";
-    if(file != null) {
+    try {
         FileInputStream i = new FileInputStream(file);
         int data;
         while ((data = i.read()) > 0) {
             output += (char) data;
         }
-    i.close();
     }
+    catch(NullPointerException e) {
+            System.out.print("NullPointerException caught");
+    }
+    catch(FileNotFoundException e) {
+            System.out.print("FileNotFoundException caught");
+    }
+    finally {
+        if (i != null) {
+            i.close();
+        }
+    }   
     return output;
   }
   public String getContentWithoutUnicode() throws IOException {
     String output = "";
-    if(file != null) {
+    try {
         FileInputStream i = new FileInputStream(file);
         int data;
         while ((data = i.read()) > 0) {
@@ -35,15 +45,31 @@ public class Parser {
                output += (char) data;
            }
         }
-        i.close();
     }
+     catch(NullPointerException e) {
+            System.out.print("NullPointerException caught");
+    }
+    catch(FileNotFoundException e) {
+            System.out.print("FileNotFoundException caught");
+    }
+    finally {
+        if (i != null) {
+            i.close();
+        }
+    }   
     return output;
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    try {
+        FileOutputStream o = new FileOutputStream(file);
+        for (int i = 0; i < content.length(); i += 1) {
+              o.write(content.charAt(i));
+        }
     }
-    o.close();
+     finally {
+        if (o != null) {
+            o.close();
+        }
+     }   
   }
 } 
