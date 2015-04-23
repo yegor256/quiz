@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 /**
  * This class is thread safe.
  */
@@ -14,29 +16,33 @@ public class Parser {
     return file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    try (FileInputStream i = new FileInputStream(file);
+    	  InputStreamReader sr = new InputStreamReader(i, "UTF-8")) {
+      StringBuilder output = new StringBuilder();
+      char[] data = new char[4096];
+      int read = 0;
+
+      while ((read = sr.read(data)) != -1) {
+        output.append(data, 0, read);
+      }
+      return output.toString();
     }
-    return output;
   }
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    String contentWithUnicode = getContent();
+    StringBuilder filtered = new StringBuilder();
+    for(char ch : contentWithUnicode.toCharArray()) {
+      if(ch < 0x80) {
+    	filtered.append(ch);
       }
     }
-    return output;
+    return filtered.toString();
   }
+
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    try (FileOutputStream o = new FileOutputStream(file);
+    	  OutputStreamWriter sw = new OutputStreamWriter(o, "UTF-8")) {
+      sw.append(content);
     }
   }
 }
