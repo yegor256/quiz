@@ -13,30 +13,25 @@ public class Parser {
   public synchronized File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
-  }
+  public String getContent(String encoding) throws IOException {
+		String output = "";
+		if (file.length() > 0) {
+			byte[] by = Files.readAllBytes(file.toPath());
+			output = new String(by, encoding);
+		}
+		return output;
+	}
+
+	public String getContentWithoutUnicode() throws IOException {
+		String output = "";
+		output = getContent("UTF-8");
+		return output;
+	}
+
+	public void saveContent(String content) throws IOException {
+		FileWriter fw = new FileWriter(file);
+		fw.write(content);
+		fw.flush();
+		fw.close();
+	}
 }
