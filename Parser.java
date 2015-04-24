@@ -25,6 +25,7 @@ public class Parser {
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
+    
     int data;
     while ((data = i.read()) > 0) {
       if (data < 0x80) {
