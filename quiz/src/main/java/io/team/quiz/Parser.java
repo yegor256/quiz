@@ -39,6 +39,15 @@ public class Parser {
         return file;
     }
 
+    public Parser(File file, CharsetDecoder decoder) {
+        this.file = file;
+        this.decoder = decoder;
+    }
+
+    public Parser(CharsetDecoder decoder) {
+        this.decoder = decoder;
+    }
+    
     public String getContent() throws IOException {
         return read(new InputStreamReader(new FileInputStream(file)));
     }
