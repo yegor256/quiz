@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -17,6 +19,7 @@ import static org.junit.Assert.*;
  */
 public class ParserTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(ParserTest.class) ;
     private Parser instance;
 
     public ParserTest() {
@@ -34,15 +37,13 @@ public class ParserTest {
     public void setUp() {
         // create the test instance
         instance = new Parser();
-
-        // load a test file
-        //ClassLoader classLoader = getClass().getClassLoader();
-        //file = new File(classLoader.getResource("test.txt").getFile());
     }
 
     private File getFile(String content) throws IOException {
+        //create a new file
         File file = new File("test.txt");
         try (BufferedWriter output = new BufferedWriter(new FileWriter(file))) {
+            // load the file with content from input
             output.write(content);
         }
         return file;
@@ -66,7 +67,7 @@ public class ParserTest {
      * Test of getContent method, of class Parser.
      */
     @org.junit.Test
-    public void testGetContentNotNull() throws Exception {
+    public void testGetContentNotNull() throws IOException {
         instance.setFile(getFile("Test"));
         String result = instance.getContent();
         assertNotNull(result);
@@ -76,6 +77,7 @@ public class ParserTest {
     public void testGetContentValue() throws Exception {
         instance.setFile(getFile("Hello World!ä"));
         String result = instance.getContent();
+        logger.info("Result: {}", result);
         assertTrue(result.equals("Hello World!ä"));
     }
 
@@ -86,6 +88,7 @@ public class ParserTest {
     public void testGetContentWithoutUnicode() throws IOException {
         instance.setFile(getFile("Hello World!ä"));
         String result = instance.getContentWithoutUnicode();
+        logger.info("Result: {}", result);        
         assertTrue(result.equals("Hello World!"));
     }
 
