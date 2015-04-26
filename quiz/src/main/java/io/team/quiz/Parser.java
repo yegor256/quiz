@@ -40,31 +40,26 @@ public class Parser {
     }
 
     public String getContent() throws IOException {
-        InputStream is = new FileInputStream(file);
-        final InputStreamReader isr = new InputStreamReader(is);
-        final BufferedReader br = new BufferedReader(isr);
-        return readFromBuffer(br);
-    }
-
-    private String readFromBuffer(BufferedReader br) throws IOException {
-        final StringBuilder sb = new StringBuilder();
-        String line = "";
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
-        }
-        return sb.toString();
+        return read(new InputStreamReader(new FileInputStream(file)));
     }
 
     public String getContentWithoutUnicode() throws IOException {
-        InputStream is = new FileInputStream(file);
-        final InputStreamReader isr = new InputStreamReader(is, decoder);
-        final BufferedReader br = new BufferedReader(isr);
-        return readFromBuffer(br);
+        return read(new InputStreamReader(new FileInputStream(file), decoder));
     }
 
     public void saveContent(String content) throws IOException {
         try (BufferedWriter output = new BufferedWriter(new FileWriter(file))) {
             output.write(content);
         }
+    }
+
+    private String read(InputStreamReader isr) throws IOException {
+        final BufferedReader br = new BufferedReader(isr);
+        final StringBuilder sb = new StringBuilder();
+        String line = "";
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        return sb.toString();
     }
 }
