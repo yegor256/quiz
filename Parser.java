@@ -1,42 +1,38 @@
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
+  private volatile File file;
+  public void setFile(File f) {
+    if (f == null) {
+      throw new IllegalArgumentException("Cannot set file to null.");
+    }
     file = f;
   }
-  public synchronized File getFile() {
+  public File getFile() {
     return file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+    byte[] contents = Files.readAllBytes(getFile().toPath());
+    return new String(contents, StandardCharsets.US_ASCII);
   }
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    try (BufferedReader reader = Files.newBufferedReader(getFile().toPath(), StandardCharsets.US_ASCII)) {
+      StringBuilder builder = new StringBuilder();
+      int read;
+      while ((read = reader.read()) != -1 && read < 128) {
+        builder.append((char) read);
       }
+      return builder.toString();
     }
-    return output;
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
+    Files.write(getFile().toPath(), content.getBytes(StandardCharsets.US_ASCII));
   }
 }
