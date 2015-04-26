@@ -24,6 +24,12 @@ import java.nio.charset.StandardCharsets;
 public class Parser {
 
     private File file;
+    private final CharsetDecoder decoder;
+
+    public Parser() {
+        decoder = StandardCharsets.UTF_8.newDecoder();
+        decoder.onMalformedInput(CodingErrorAction.IGNORE);
+    }
 
     public synchronized void setFile(File f) {
         file = f;
@@ -34,10 +40,14 @@ public class Parser {
     }
 
     public String getContent() throws IOException {
-        final StringBuilder sb = new StringBuilder();
         InputStream is = new FileInputStream(file);
         final InputStreamReader isr = new InputStreamReader(is);
         final BufferedReader br = new BufferedReader(isr);
+        return readFromBuffer(br);
+    }
+
+    private String readFromBuffer(BufferedReader br) throws IOException {
+        final StringBuilder sb = new StringBuilder();
         String line = "";
         while ((line = br.readLine()) != null) {
             sb.append(line);
@@ -46,21 +56,10 @@ public class Parser {
     }
 
     public String getContentWithoutUnicode() throws IOException {
-        final StringBuilder sb = new StringBuilder();
         InputStream is = new FileInputStream(file);
-        
-        // adding a decoder to igonore unmapped chars (not unicode UTF-8)
-        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
-        decoder.onMalformedInput(CodingErrorAction.IGNORE);
-
         final InputStreamReader isr = new InputStreamReader(is, decoder);
         final BufferedReader br = new BufferedReader(isr);
-        String line = "";
-        while ((line = br.readLine()) != null) {
-            //line.replace();
-            sb.append(line);
-        }
-        return sb.toString();
+        return readFromBuffer(br);
     }
 
     public void saveContent(String content) throws IOException {
