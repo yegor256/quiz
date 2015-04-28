@@ -6,37 +6,46 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
+  private File mFile;
+  
   public synchronized void setFile(File f) {
-    file = f;
+    mFile = f;
   }
+  
   public synchronized File getFile() {
-    return file;
+    return mFile;
   }
+  
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    FileInputStream inStream = new FileInputStream( mFile );
+    StringBuilder output = new StringBuilder();
+    int readChar = 0;
+    
+    while (( readChar = inStream.read() ) > 0 ) {
+      output.append( (char) readChar );
     }
-    return output;
+    
+    return output.toString();
   }
+  
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    FileInputStream inStream = new FileInputStream( mFile );
+    StringBuilder output = new StringBuilder();
+    int readChar = 0;
+    
+    while (( readChar = i.read() ) > 0 ) {
+      if ( readChar < 0x80 ) {
+        output.append( (char) readChar );
       }
     }
-    return output;
+    
+    return output.toString();
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
+  
+  public void saveContent( String content ) throws IOException {
+    FileOutputStream outStream = new FileOutputStream( mFile );
+    
+    outStream.write( content.getBytes() );
+    outStream.close();
   }
 }
