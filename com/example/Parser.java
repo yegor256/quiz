@@ -25,7 +25,7 @@ public class Parser {
   public String getContent() throws IOException {
     File file = this.file;
     if (file == null) throw new IOException("File is null");
-    InputStream i = new FileInputStream(file);
+    InputStream i = new BufferedInputStream(new FileInputStream(file));
     try {
       StringBuilder output = new StringBuilder();
       int data;
@@ -43,7 +43,7 @@ public class Parser {
   public String getContentWithoutUnicode() throws IOException {
     File file = this.file;
     if (file == null) throw new IOException("File is null");
-    InputStream i = new FileInputStream(file);
+    InputStream i = new BufferedInputStream(new FileInputStream(file));
     try {
       StringBuilder output = new StringBuilder();
       int data;
@@ -62,7 +62,7 @@ public class Parser {
   public void saveContent(@NotNull String content) throws IOException {
     File file = this.file;
     if (file == null) throw new IOException("File is null");
-    OutputStream o = new FileOutputStream(file);
+    OutputStream o = new BufferedOutputStream(new FileOutputStream(file));
     try {
       for (int i = 0; i < content.length(); i += 1) {
         o.write(content.charAt(i));
