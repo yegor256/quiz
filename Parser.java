@@ -13,6 +13,8 @@ public class Parser {
   public synchronized File getFile() {
     return file;
   }
+  // original code commented out
+  /*
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
@@ -30,6 +32,27 @@ public class Parser {
       if (data < 0x80) {
         output += (char) data;
       }
+    }
+    return output;
+  }
+  */
+  // new code made 1 getContent method with a unicode parameter
+  public String getContent(boolean checkUnicode) throws IOException {
+    FileInputStream i = new FileInputStream(file);
+    String output = "";
+    int data;
+    while ((data = i.read()) > 0) {
+    	if (checkUnicode)
+    	{
+    		if (data < 0x80) 
+    		{
+        	output += (char) data;
+      	}
+    	}
+    	else
+    	{
+      	output += (char) data;
+    	}
     }
     return output;
   }
