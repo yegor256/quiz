@@ -7,4 +7,4 @@ do here. Try to spend 15 minutes maximum for the entire work. If you
 need more time, you're doing something wrong. Remember, you have to
 do just the first step in refactoring. Don't fix everything.
 
-Thanks!
+Thanks123456!
