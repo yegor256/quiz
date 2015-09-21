@@ -2,35 +2,35 @@
 class Document {
 
     public $user;
-
     public $name;
+    public $title;
+    public $content;
 
     public function init($name, User $user) {
         assert(strlen($name) > 5);
         $this->user = $user;
         $this->name = $name;
-    }
-
-    public function getTitle() {
+        
         $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        $row = $db->query('SELECT title, content FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+        
+        if ($row) {
+        	$this->title = $row["title"];
+			$this->content = $row["content"];
+        }
     }
 
-    public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
-    }
-
-    public static function getAllDocuments() {
+    public static function getAllDocuments($user) {
+	    // get documents by email
         // to be implemented later
     }
 
 }
 
 class User {
-
+	
+	public $email;
+	
     public function makeNewDocument($name) {
         $doc = new Document();
         $doc->init($name, $this);
@@ -39,9 +39,8 @@ class User {
 
     public function getMyDocuments() {
         $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
-                $list[] = $doc;
+        foreach (Document::getAllDocuments($this) as $doc) {
+        	array_push($list, $doc)
         }
         return $list;
     }
