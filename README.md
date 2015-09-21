@@ -1,3 +1,5 @@
+[![Made By Teamed.io](http://img.teamed.io/btn.svg)](http://www.teamed.io)
+
 Imagine you're assigned as a developer to this project and you
 have to make the first step in refactoring of one of these classes
 (choose one, by the language you're most comfortable in).
