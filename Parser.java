@@ -77,10 +77,7 @@ public class Parser {
 		return output;
 	}
 
-	/**
-	 * Write a byte of data into file If not any file than create it
-	 * 
-	 * */
+	 
 	/**
 	 * Write a byte of data into file If not any file than create it
 	 * 
