@@ -66,7 +66,6 @@ public class TestParser {
         try {
             parser.saveContent(unicodeString);
             String unicodeStringFromFile = parser.getContent();
-            assertFalse("true ", unicodeString.equals(unicodeStringFromFile));
             assertTrue("expected 'true' that equal unicode strings written and read", unicodeString.equals(unicodeStringFromFile));
         } catch (IOException e) {
             fail("some I/O exception in saveContent() or getContent()");
