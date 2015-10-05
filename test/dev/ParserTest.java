@@ -6,15 +6,15 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
 /**
  * 
  * @author Kolobov Alexsander
  *
  */
 public class ParserTest {
-	Parser parser;
+	FileUtil parser;
 	File testFile;
 	String content;
 	String contentWithUnicode;
@@ -53,6 +53,7 @@ public class ParserTest {
 			e.printStackTrace();
 		}
 	}
+
 	@Test
 	public void testGetContentWithUnicode() {
 		parser.setFile(testFile);
@@ -64,17 +65,27 @@ public class ParserTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void testGetContentWithoutUnicode() {
 		parser.setFile(testFile);
 		String expected = "Hello, teamed.io ";
 		try {
-			parser.saveContent(contentWithUnicode);			
+			parser.saveContent(contentWithUnicode);
 			assertTrue(expected.equals(parser.getContentWithoutUnicode()));
 		} catch (IOException e) {
 			fail("I/O Exeption was caught");
 			e.printStackTrace();
 		}
+	}
+
+	@Test
+	public void testSetFile() {
+		assertNull("expected NULL if file was not set in parser",
+				parser.getFile());
+		String path = "test.txt";
+		assertTrue(path.equals(testFile.getName()));
+		parser.setFile(testFile);
+		assertEquals(testFile, parser.getFile());
 	}
 }
