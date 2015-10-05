@@ -20,31 +20,34 @@ public class Parser {
 	}
 
 	public String getContent() throws IOException {
-		FileInputStream i = new FileInputStream(file);
-		String output = "";
-		int data;
-		while ((data = i.read()) > 0) {
-			output += (char) data;
+		try (FileInputStream i = new FileInputStream(file)) {
+			StringBuilder output = new StringBuilder();
+			int data;
+			while ((data = i.read()) != -1) {
+				output.append((char) data);
+			}
+			return output.toString();
 		}
-		return output;
 	}
 
 	public String getContentWithoutUnicode() throws IOException {
-		FileInputStream i = new FileInputStream(file);
-		String output = "";
-		int data;
-		while ((data = i.read()) > 0) {
-			if (data < 0x80) {
-				output += (char) data;
+		try (FileInputStream i = new FileInputStream(file)) {
+			StringBuilder output = new StringBuilder();
+			int data;
+			while ((data = i.read()) != -1) {
+				if (data < 0x80) {
+					output.append((char) data);
+				}
 			}
+			return output.toString();
 		}
-		return output;
 	}
 
 	public void saveContent(String content) throws IOException {
-		FileOutputStream o = new FileOutputStream(file);
-		for (int i = 0; i < content.length(); i += 1) {
-			o.write(content.charAt(i));
+		try (FileOutputStream o = new FileOutputStream(file)) {
+			for (int i = 0; i < content.length(); i++) {
+				o.write(content.charAt(i));
+			}
 		}
 	}
 }
