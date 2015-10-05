@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Eugene Katrechko on 10/4/15.
  */
-public class TestParser {
+public class ParserTest {
 
     @Test
     public void testSaveContent() {
