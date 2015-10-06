@@ -10,7 +10,7 @@ public class ParserTest {
 	private Parser parser;
 	private File testFile;
 	private final static String BASIC_LATIN = "JAVA is the best! ";
-	private final static String BASIC_LATIN_WITH_UNICODE = "\u0414\u0400JAVA is the best! ";
+	private final static String BASIC_LATIN_WITH_UNICODE = "java приходи ко мне в пещеру будем мамонтов пугать.JAVA";
 
 	@Before
 	public void setUp() throws Exception {
@@ -61,7 +61,7 @@ public class ParserTest {
 	public void testGetContentWithoutUnicodeStringWithUnicode() throws IOException {
 		parser.setFile(testFile);
 		parser.saveContent(BASIC_LATIN_WITH_UNICODE);
-		assertTrue(BASIC_LATIN_WITH_UNICODE.equals(parser.getContentWithoutUnicode()));
+		assertFalse(BASIC_LATIN_WITH_UNICODE.equals(parser.getContentWithoutUnicode()));
 	}
 
 	@Test
