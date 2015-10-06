@@ -1,44 +1,44 @@
 package dev;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
-  }
+	private File file;
+
+	public synchronized void setFile(File f) {
+		file = f;
+	}
+
+	public synchronized File getFile() {
+		return file;
+	}
+
+	public String getContent() throws IOException {
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			StringBuilder output = new StringBuilder();
+			int data;
+			while ((data = reader.read()) != -1) {
+				output.append((char) data);
+			}
+			return output.toString();
+		}
+	}
+
+	public String getContentWithoutUnicode() throws IOException {
+		return getContent().replaceAll("\\P{Print}", "");
+	}
+
+	public void saveContent(String content) throws IOException {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			writer.write(content);
+		}
+	}
 }
