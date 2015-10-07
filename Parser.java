@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 /**
  * This class is thread safe.
  */
@@ -14,13 +17,7 @@ public class Parser {
     return file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+    return new String(Files.readAllBytes(Paths.get(file.toURI())));
   }
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
