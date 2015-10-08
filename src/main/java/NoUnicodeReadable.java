@@ -23,5 +23,4 @@ public class NoUnicodeReadable implements Readable {
     public String read() throws IOException {
         return this.contentReader.read().replaceAll("[^\\u0000-\\uFFFF]", "");
     }
-
 }

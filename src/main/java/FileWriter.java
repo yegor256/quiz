@@ -23,8 +23,8 @@ public class FileWriter implements Writable {
     @Override
     public void write(String content) throws IOException {
         try (BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(this.file), StandardCharsets.UTF_8)))
-        {
+                new FileOutputStream(this.file), StandardCharsets.UTF_8))
+        ){
             bufWriter.write(content);
         }
     }

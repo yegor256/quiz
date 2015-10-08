@@ -33,7 +33,6 @@ public class ParserTest {
         assertTrue("expected 'true' if file is file", testFile.isFile());
         assertTrue("expected 'true' if file can read", testFile.canRead());
         assertTrue("expected 'true' if file can write", testFile.canWrite());
-
     }
 
     @Test
