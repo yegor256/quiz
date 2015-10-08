@@ -66,15 +66,11 @@ public class ParserTest {
     }
 
     @Test
-    public void testSaveReadContentUnicode() {
+    public void testSaveReadContentUnicode() throws Exception{
         String unicodeString = "\u00C6\u00D7\u00E8\n\u00C6\u00D7\u00E8\nHello world!\n";
-        try {
             parser.saveContent(unicodeString);
             String unicodeStringFromFile = parser.getContent();
             assertTrue("expected 'true' that equal unicode strings written and read", unicodeString.equals(unicodeStringFromFile));
-        } catch (IOException e) {
-            fail("some I/O exception in saveContent() or getContent()");
-        }
     }
 
     @Test

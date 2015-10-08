@@ -21,9 +21,10 @@ public class FileWriter implements Writable {
      * @throws IOException If an I/O error occurs
      */
     @Override
-    public void writeContent(String content) throws IOException {
+    public void write(String content) throws IOException {
         try (BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), StandardCharsets.UTF_8))) {
+                new FileOutputStream(this.file), StandardCharsets.UTF_8)))
+        {
             bufWriter.write(content);
         }
     }

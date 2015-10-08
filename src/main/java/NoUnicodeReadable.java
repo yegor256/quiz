@@ -8,10 +8,10 @@ import java.io.IOException;
  * @version $Id$
  * @since 1.6
  */
-public class WithoutUnicodeFileReader implements Readable {
+public class NoUnicodeReadable implements Readable {
     Readable contentReader;
 
-    public WithoutUnicodeFileReader(Readable contentReader) {
+    public NoUnicodeReadable(Readable contentReader) {
         this.contentReader = contentReader;
     }
 
@@ -20,8 +20,8 @@ public class WithoutUnicodeFileReader implements Readable {
      * @throws IOException If an I/O error occurs
      */
     @Override
-    public String readContent() throws IOException {
-        return this.contentReader.readContent().replaceAll("[^\\u0000-\\uFFFF]", "");
+    public String read() throws IOException {
+        return this.contentReader.read().replaceAll("[^\\u0000-\\uFFFF]", "");
     }
 
 }

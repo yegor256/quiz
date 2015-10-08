@@ -14,5 +14,5 @@ public interface Writable {
      * @param content String for writing
      * @throws IOException If an I/O error occurs
      */
-    void writeContent(String content) throws IOException;
+    void write(String content) throws IOException;
 }

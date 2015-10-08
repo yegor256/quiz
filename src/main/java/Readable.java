@@ -14,5 +14,5 @@ public interface Readable {
      * @return A String with content
      * @throws IOException If an I/O error occurs
      */
-    String readContent() throws IOException;
+    String read() throws IOException;
 }

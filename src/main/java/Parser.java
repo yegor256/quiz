@@ -36,7 +36,7 @@ public class Parser {
      * @throws IOException If an I/O error occurs
      */
     public String getContent() throws IOException {
-        return new FileReader(this.file).readContent();
+        return new FileReader(this.file).read();
     }
 
     /**
@@ -46,7 +46,7 @@ public class Parser {
      * @throws IOException If an I/O error occurs
      */
     public String getContentWithoutUnicode() throws IOException {
-        return new WithoutUnicodeFileReader(new FileReader(this.file)).readContent();
+        return new NoUnicodeReadable(new FileReader(this.file)).read();
     }
 
     /**
@@ -56,6 +56,6 @@ public class Parser {
      * @throws IOException If an I/O error occurs
      */
     public void saveContent(String content) throws IOException {
-        new FileWriter(this.file).writeContent(content);
+        new FileWriter(this.file).write(content);
     }
 }

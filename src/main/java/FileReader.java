@@ -21,20 +21,15 @@ public class FileReader implements Readable {
      * @throws IOException If an I/O error occurs
      */
     @Override
-    public String readContent() throws IOException {
-        BufferedReader bufReader = null;
+    public String read() throws IOException {
         StringBuilder outputString = new StringBuilder();
-        try {
-            bufReader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(file), StandardCharsets.UTF_8));
+        try (BufferedReader bufReader = new BufferedReader(new InputStreamReader(
+                new FileInputStream(file), StandardCharsets.UTF_8)))
+        {
             while (true) {
                 int data = bufReader.read();
                 if (data == -1) break; // exit point
                 outputString.append((char) data);
-            }
-        } finally {
-            if (bufReader != null) {
-                bufReader.close();
             }
         }
         return outputString.toString();
