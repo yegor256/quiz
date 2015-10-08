@@ -26,51 +26,40 @@ public class ParserTest {
     }
 
     @Test
-    public void testSaveContent() {
+    public void testSaveContent() throws IOException {
         String str = "Hello world!\nThis is test.";
-        try {
-            parser.saveContent(str);
-            assertTrue("expected 'true' if file exists", testFile.exists());
-            assertTrue("expected 'true' if file is file", testFile.isFile());
-            assertTrue("expected 'true' if file can read", testFile.canRead());
-            assertTrue("expected 'true' if file can write", testFile.canWrite());
-        } catch (IOException e) {
-            fail("some I/O exception in saveContent()");
-        }
+        parser.saveContent(str);
+        assertTrue("expected 'true' if file exists", testFile.exists());
+        assertTrue("expected 'true' if file is file", testFile.isFile());
+        assertTrue("expected 'true' if file can read", testFile.canRead());
+        assertTrue("expected 'true' if file can write", testFile.canWrite());
+
     }
 
     @Test
-    public void testSaveContentUnicode() {
+    public void testSaveContentUnicode() throws IOException {
         String unicodeString = "\u00C6\u00D7\u00E8";
-        try {
-            parser.saveContent(unicodeString);
-            assertTrue("expected 'true' if file exists", testFile.exists());
-            assertTrue("expected 'true' if file is file", testFile.isFile());
-            assertTrue("expected 'true' if file can read", testFile.canRead());
-            assertTrue("expected 'true' if file can write", testFile.canWrite());
-        } catch (IOException e) {
-            fail("some I/O exception in saveContent() unicode string");
-        }
+        parser.saveContent(unicodeString);
+        assertTrue("expected 'true' if file exists", testFile.exists());
+        assertTrue("expected 'true' if file is file", testFile.isFile());
+        assertTrue("expected 'true' if file can read", testFile.canRead());
+        assertTrue("expected 'true' if file can write", testFile.canWrite());
     }
 
     @Test
-    public void testSaveReadContent() {
+    public void testSaveReadContent() throws IOException {
         String str = "Hello world! \nThis is test.";
-        try {
-            parser.saveContent(str);
-            String strFromFile = parser.getContentWithoutUnicode();
-            assertTrue("expected 'true' that equal plain strings written and read", str.equals(strFromFile));
-        } catch (IOException e) {
-            fail("some I/O exception in saveContent() or getContent()");
-        }
+        parser.saveContent(str);
+        String strFromFile = parser.getContentWithoutUnicode();
+        assertTrue("expected 'true' that equal plain strings written and read", str.equals(strFromFile));
     }
 
     @Test
-    public void testSaveReadContentUnicode() throws Exception{
+    public void testSaveReadContentUnicode() throws Exception {
         String unicodeString = "\u00C6\u00D7\u00E8\n\u00C6\u00D7\u00E8\nHello world!\n";
-            parser.saveContent(unicodeString);
-            String unicodeStringFromFile = parser.getContent();
-            assertTrue("expected 'true' that equal unicode strings written and read", unicodeString.equals(unicodeStringFromFile));
+        parser.saveContent(unicodeString);
+        String unicodeStringFromFile = parser.getContent();
+        assertTrue("expected 'true' that equal unicode strings written and read", unicodeString.equals(unicodeStringFromFile));
     }
 
     @Test
@@ -78,7 +67,7 @@ public class ParserTest {
         parser.setFile(null);
         assertNull("expected 'null'", parser.getFile());
         parser.setFile(testFile);
-        assertEquals("expected 'equals'",testFile, parser.getFile());
+        assertEquals("expected 'equals'", testFile, parser.getFile());
     }
 
     @Test
