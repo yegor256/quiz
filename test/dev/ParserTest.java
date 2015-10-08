@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import org.junit.Before;
@@ -29,31 +30,33 @@ public class ParserTest {
 	private static String read() throws IOException{
 		return new String(Files.readAllBytes(testFile.toPath()));
 	}
-
+	private static void write(String content) throws IOException{
+		Files.write(testFile.toPath(), content.getBytes(Charset.defaultCharset()));
+		}
 	
 	@Test
 	public void testGetContentStringWithUnicode() throws IOException {	
-		parser.saveContent(LATIN_WITH_UNICODE);
-		assertTrue(LATIN_WITH_UNICODE.equals(read()));
+		write(LATIN_WITH_UNICODE);
+		assertTrue(LATIN_WITH_UNICODE.equals(parser.getContent()));
 	}
 
 	@Test
 	public void testGetContentStringWithoutUnicode() throws IOException {	
-		parser.saveContent(LATIN);
-		assertTrue(LATIN.equals(read()));
+		write(LATIN);
+		assertTrue(LATIN.equals(parser.getContent()));
 	}
 
 	@Test
 	public void testGetContentWithoutUnicodeStringWithoutUnicode()
 			throws IOException {
-		parser.saveContent(LATIN);
-		assertTrue(LATIN.equals(read()));
+		write(LATIN);
+		assertTrue(LATIN.equals(parser.getContentWithoutUnicode()));
 	}
 
 	@Test
 	public void testGetContentWithoutUnicodeStringWithUnicode() throws IOException {
-		parser.saveContent(LATIN_WITH_UNICODE);
-		assertFalse(LATIN_WITH_UNICODE.equals(read().replaceAll("\\p{Print}", "")));
+		write(LATIN_WITH_UNICODE);
+		assertFalse(LATIN_WITH_UNICODE.equals(parser.getContentWithoutUnicode()));
 	}
 	
 	@Test
