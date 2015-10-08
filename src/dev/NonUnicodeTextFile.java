@@ -12,8 +12,8 @@ private final Text text;
 
 	@Override
 	public String read() throws IOException {
-		this.text.read().replaceAll("\\P{Print}", "");
-		return null;
+		return this.text.read().replaceAll("\\P{Print}", "");
+		
 	}
 
 	@Override
