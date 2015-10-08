@@ -16,7 +16,7 @@ import org.junit.Test;
  */
 public class ParserTest {
 	private Parser parser;
-	private File testFile;
+	private static File testFile;
 	private final String LATIN = "Hello teamed.io";;
 	private final String LATIN_WITH_UNICODE = "Hello, ку ку шечка teamed.io ";
 
@@ -26,45 +26,46 @@ public class ParserTest {
 		testFile = new File("test.txt");
 		parser.setFile(testFile);
 	}
+	private static String read() throws IOException{
+		return new String(Files.readAllBytes(testFile.toPath()));
+	}
 
 	
 	@Test
 	public void testGetContentStringWithUnicode() throws IOException {	
 		parser.saveContent(LATIN_WITH_UNICODE);
-		assertTrue(LATIN_WITH_UNICODE.equals(new String(Files.readAllBytes(testFile.toPath()))));
+		assertTrue(LATIN_WITH_UNICODE.equals(read()));
 	}
 
 	@Test
 	public void testGetContentStringWithoutUnicode() throws IOException {	
 		parser.saveContent(LATIN);
-		assertTrue(LATIN.equals(new String(Files.readAllBytes(testFile.toPath()))));
+		assertTrue(LATIN.equals(read()));
 	}
 
 	@Test
 	public void testGetContentWithoutUnicodeStringWithoutUnicode()
 			throws IOException {
 		parser.saveContent(LATIN);
-		String actual = new String(Files.readAllBytes(testFile.toPath()));
-		assertTrue(LATIN.equals(actual));
+		assertTrue(LATIN.equals(read()));
 	}
 
 	@Test
 	public void testGetContentWithoutUnicodeStringWithUnicode() throws IOException {
 		parser.saveContent(LATIN_WITH_UNICODE);
-		String actual = new String(Files.readAllBytes(testFile.toPath())).replaceAll("\\p{Print}", "");
-		assertFalse(LATIN_WITH_UNICODE.equals(actual));
+		assertFalse(LATIN_WITH_UNICODE.equals(read().replaceAll("\\p{Print}", "")));
 	}
 	
 	@Test
 	public void testSaveContentWithoutUnicode() throws IOException {
 		parser.saveContent(LATIN);
-		assertTrue(LATIN.equals(new String(Files.readAllBytes(testFile.toPath()))));
+		assertTrue(LATIN.equals(read()));
 	}
 
 	@Test
 	public void testSaveContentWithUnicode() throws IOException {
 		parser.saveContent(LATIN_WITH_UNICODE);
-		assertTrue(LATIN_WITH_UNICODE.equals(new String(Files.readAllBytes(testFile.toPath()))));
+		assertTrue(LATIN_WITH_UNICODE.equals(read()));
 	}
 
 }
