@@ -20,8 +20,9 @@ import org.junit.rules.TemporaryFolder;
 public class ParserTest {
 	private Parser parser;
 	private static File testFile;
-	private final String LATIN = "Hello teamed.io";;
-	private final String LATIN_WITH_UNICODE = "Hello, ку ку шечка teamed.io ";
+	private final static String LATIN = "Hello teamed.io";;
+	private final static String LATIN_WITH_UNICODE = "Hello, ку ку шечка teamed.io ";
+	private final static String EXPECTED = "Hello,    teamed.io ";
 
 	@Rule
 	public TemporaryFolder testFolder = new TemporaryFolder();
@@ -32,9 +33,11 @@ public class ParserTest {
 		testFile = testFolder.newFile("test.txt");
 		parser.setFile(testFile);
 	}
+	
 	private static String read() throws IOException{
 		return new String(Files.readAllBytes(testFile.toPath()));
 	}
+	
 	private static void write(String content) throws IOException{
 		Files.write(testFile.toPath(), content.getBytes(Charset.defaultCharset()));
 		}
@@ -48,32 +51,32 @@ public class ParserTest {
 	@Test
 	public void testGetContentStringWithoutUnicode() throws IOException {	
 		write(LATIN);
-		assertTrue(LATIN.equals(parser.getContent()));
+		assertEquals(LATIN, parser.getContent());
 	}
 
 	@Test
 	public void testGetContentWithoutUnicodeStringWithoutUnicode()
 			throws IOException {
 		write(LATIN);
-		assertTrue(LATIN.equals(parser.getContentWithoutUnicode()));
+		assertEquals(LATIN, parser.getContentWithoutUnicode());
 	}
 
 	@Test
 	public void testGetContentWithoutUnicodeStringWithUnicode() throws IOException {
 		write(LATIN_WITH_UNICODE);
-		assertFalse(LATIN_WITH_UNICODE.equals(parser.getContentWithoutUnicode()));
+		assertEquals(EXPECTED, parser.getContentWithoutUnicode());
 	}
 	
 	@Test
 	public void testSaveContentWithoutUnicode() throws IOException {
 		parser.saveContent(LATIN);
-		assertTrue(LATIN.equals(read()));
+		assertEquals(LATIN, read());
 	}
 
 	@Test
 	public void testSaveContentWithUnicode() throws IOException {
 		parser.saveContent(LATIN_WITH_UNICODE);
-		assertTrue(LATIN_WITH_UNICODE.equals(read()));
+		assertEquals(LATIN_WITH_UNICODE, read());
 	}
 
 }
