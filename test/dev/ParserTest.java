@@ -8,7 +8,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * 
@@ -21,10 +23,13 @@ public class ParserTest {
 	private final String LATIN = "Hello teamed.io";;
 	private final String LATIN_WITH_UNICODE = "Hello, ку ку шечка teamed.io ";
 
+	@Rule
+	public TemporaryFolder testFolder = new TemporaryFolder();
+	
 	@Before
 	public void initialize() throws Exception {
 		parser = new Parser();
-		testFile = new File("test.txt");
+		testFile = testFolder.newFile("test.txt");
 		parser.setFile(testFile);
 	}
 	private static String read() throws IOException{
