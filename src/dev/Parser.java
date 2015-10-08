@@ -1,8 +1,10 @@
 package dev;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 /**
@@ -20,10 +22,10 @@ public class Parser {
 	}
 
 	public String getContent() throws IOException {
-		try (FileInputStream i = new FileInputStream(file)) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			StringBuilder output = new StringBuilder();
 			int data;
-			while ((data = i.read()) != -1) {
+			while ((data = reader.read()) != -1) {
 				output.append((char) data);
 			}
 			return output.toString();
@@ -31,23 +33,12 @@ public class Parser {
 	}
 
 	public String getContentWithoutUnicode() throws IOException {
-		try (FileInputStream i = new FileInputStream(file)) {
-			StringBuilder output = new StringBuilder();
-			int data;
-			while ((data = i.read()) != -1) {
-				if (data < 0x80) {
-					output.append((char) data);
-				}
-			}
-			return output.toString();
-		}
+				return getContent().replaceAll("\\P{Print}", "");
 	}
 
 	public void saveContent(String content) throws IOException {
-		try (FileOutputStream o = new FileOutputStream(file)) {
-			for (int i = 0; i < content.length(); i++) {
-				o.write(content.charAt(i));
-			}
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			writer.write(content);
 		}
 	}
 }

@@ -4,77 +4,64 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
 /**
  * 
  * @author Kolobov Alexsander
  *
  */
 public class ParserTest {
-	Parser parser;
-	File testFile;
-	String content;
-	String contentWithUnicode;
+	private Parser parser;
+	private File testFile;
+	private final String LATIN = "Hello teamed.io";;
+	private final String LATIN_WITH_UNICODE = "Hello, ку ку шечка teamed.io ";
 
 	@Before
-	public void initialize() {
+	public void initialize() throws Exception {
 		parser = new Parser();
 		testFile = new File("test.txt");
-		content = "Hello teamed.io";
-		contentWithUnicode = "Hello, teamed.io \u00c8";
+		parser.setFile(testFile);
+	}
+
+	
+	@Test
+	public void testGetContentStringWithUnicode() throws IOException {
+	
+		parser.saveContent(LATIN_WITH_UNICODE);
+		assertTrue(LATIN_WITH_UNICODE.equals(parser.getContent()));
 	}
 
 	@Test
-	public void testSaveContent() {
-		parser.setFile(testFile);
-		try {
-			parser.saveContent(content);
-			assertTrue(testFile.exists());
-			assertTrue(testFile.isFile());
-			assertTrue(testFile.canRead());
-			assertTrue(testFile.canWrite());
-		} catch (IOException e) {
-			fail("I/O Exeption was caught");
-			e.printStackTrace();
-		}
+	public void testGetContentStringWithoutUnicode() throws IOException {	
+		parser.saveContent(LATIN);
+		assertTrue(LATIN.equals(parser.getContent()));
 	}
 
 	@Test
-	public void testGetContent() {
-		parser.setFile(testFile);
-		try {
-			parser.saveContent(content);
-			assertTrue(content.equals(parser.getContent()));
-		} catch (IOException e) {
-			fail("I/O Exeption was caught");
-			e.printStackTrace();
-		}
+	public void testGetContentWithUnicodeStringWithoutUnicode()
+			throws IOException {
+		parser.saveContent(LATIN);
+		assertTrue(LATIN.equals(parser.getContent()));
 	}
+
 	@Test
-	public void testGetContentWithUnicode() {
-		parser.setFile(testFile);
-		try {
-			parser.saveContent(contentWithUnicode);
-			assertTrue(contentWithUnicode.equals(parser.getContent()));
-		} catch (IOException e) {
-			fail("I/O Exeption was caught");
-			e.printStackTrace();
-		}
+	public void testGetContentWithoutUnicodeStringWithUnicode() throws IOException {
+		parser.saveContent(LATIN_WITH_UNICODE);
+		assertFalse(LATIN_WITH_UNICODE.equals(parser.getContentWithoutUnicode()));
 	}
 	
 	@Test
-	public void testGetContentWithoutUnicode() {
-		parser.setFile(testFile);
-		String expected = "Hello, teamed.io ";
-		try {
-			parser.saveContent(contentWithUnicode);			
-			assertTrue(expected.equals(parser.getContentWithoutUnicode()));
-		} catch (IOException e) {
-			fail("I/O Exeption was caught");
-			e.printStackTrace();
-		}
+	public void testSaveContentWithoutUnicode() throws IOException {
+		parser.saveContent(LATIN);
+		assertTrue(LATIN.equals(parser.getContent()));
 	}
+
+	@Test
+	public void testSaveContentWithUnicode() throws IOException {
+		parser.saveContent(LATIN_WITH_UNICODE);
+		assertTrue(LATIN_WITH_UNICODE.equals(parser.getContent()));
+	}
+
 }
