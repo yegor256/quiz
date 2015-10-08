@@ -12,33 +12,26 @@ import java.io.IOException;
  */
 public class Parser {
 	private File file;
+	Text text;
 
 	public synchronized void setFile(File f) {
 		file = f;
+		text = new TextFile(file);
 	}
 
 	public synchronized File getFile() {
 		return file;
 	}
 
-	public String getContent() throws IOException {
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			StringBuilder output = new StringBuilder();
-			int data;
-			while ((data = reader.read()) != -1) {
-				output.append((char) data);
-			}
-			return output.toString();
-		}
+	public String getContent() throws IOException {		
+			return text.read();		
 	}
 
 	public String getContentWithoutUnicode() throws IOException {
-				return getContent().replaceAll("\\P{Print}", "");
+				return new NonUnicodeTextFile(text).read();
 	}
 
 	public void saveContent(String content) throws IOException {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-			writer.write(content);
-		}
+		text.write(content);
 	}
 }
