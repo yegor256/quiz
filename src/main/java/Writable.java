@@ -9,11 +9,10 @@ import java.io.IOException;
  * @version $Id$
  * @since 1.6
  */
-public interface ContentWritable {
+public interface Writable {
     /**
-     * @param file    File for writing
      * @param content String for writing
      * @throws IOException If an I/O error occurs
      */
-    void writeContent(File file, String content) throws IOException;
+    void writeContent(String content) throws IOException;
 }

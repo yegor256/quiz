@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -9,21 +8,20 @@ import java.io.IOException;
  * @version $Id$
  * @since 1.6
  */
-public class ContentWithoutUnicodeFileReader implements ContentReadable {
-    ContentReadable contentReader;
+public class WithoutUnicodeFileReader implements Readable {
+    Readable contentReader;
 
-    public ContentWithoutUnicodeFileReader(ContentReadable contentReader) {
+    public WithoutUnicodeFileReader(Readable contentReader) {
         this.contentReader = contentReader;
     }
 
     /**
-     * @param file File for reading
      * @return A String with content without Unicode
      * @throws IOException If an I/O error occurs
      */
     @Override
-    public String readContent(File file) throws IOException {
-        return this.contentReader.readContent(file).replaceAll("[^\\u0000-\\uFFFF]", "");
+    public String readContent() throws IOException {
+        return this.contentReader.readContent().replaceAll("[^\\u0000-\\uFFFF]", "");
     }
 
 }

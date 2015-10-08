@@ -9,17 +9,20 @@ import java.nio.charset.StandardCharsets;
  * @version $Id$
  * @since 1.6
  */
-public class ContentFileReader implements ContentReadable {
+public class FileReader implements Readable {
+    private File file;
+
+    public FileReader(File file) {
+        this.file = file;
+    }
+
     /**
-     * @param file File for reading
      * @return A String with content
      * @throws IOException If an I/O error occurs
      */
     @Override
-    public String readContent(File file) throws IOException {
+    public String readContent() throws IOException {
         BufferedReader bufReader = null;
-
-        if (file == null) throw new IOException("File not found");
         StringBuilder outputString = new StringBuilder();
         try {
             bufReader = new BufferedReader(new InputStreamReader(

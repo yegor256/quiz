@@ -9,15 +9,19 @@ import java.nio.charset.StandardCharsets;
  * @version $Id$
  * @since 1.6
  */
-public class ContentFileWriter implements ContentWritable {
+public class FileWriter implements Writable {
+    private File file;
+
+    public FileWriter(File file) {
+        this.file = file;
+    }
+
     /**
-     * @param file    File for writing
      * @param content String for writing
      * @throws IOException If an I/O error occurs
      */
     @Override
-    public void writeContent(File file, String content) throws IOException {
-        if (file == null) throw new IOException("File not found");
+    public void writeContent(String content) throws IOException {
         try (BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), StandardCharsets.UTF_8))) {
             bufWriter.write(content);

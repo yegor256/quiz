@@ -9,11 +9,10 @@ import java.io.IOException;
  * @version $Id$
  * @since 1.6
  */
-public interface ContentReadable {
+public interface Readable {
     /**
-     * @param file File for reading
      * @return A String with content
      * @throws IOException If an I/O error occurs
      */
-    String readContent(File file) throws IOException;
+    String readContent() throws IOException;
 }

@@ -11,7 +11,7 @@ import java.io.IOException;
  * @version $Id$
  * @since 1.6
  */
-public class Parser implements EncodingParser {
+public class Parser {
     private File file;
 
     public synchronized void setFile(File f) {
@@ -35,9 +35,8 @@ public class Parser implements EncodingParser {
      * @return A String with content
      * @throws IOException If an I/O error occurs
      */
-    @Override
     public String getContent() throws IOException {
-        return new ContentFileReader().readContent(this.file);
+        return new FileReader(this.file).readContent();
     }
 
     /**
@@ -46,9 +45,8 @@ public class Parser implements EncodingParser {
      * @return A String with content without unicode
      * @throws IOException If an I/O error occurs
      */
-    @Override
     public String getContentWithoutUnicode() throws IOException {
-        return new ContentWithoutUnicodeFileReader(new ContentFileReader()).readContent(this.file);
+        return new WithoutUnicodeFileReader(new FileReader(this.file)).readContent();
     }
 
     /**
@@ -57,8 +55,7 @@ public class Parser implements EncodingParser {
      * @param content A String for writing
      * @throws IOException If an I/O error occurs
      */
-    @Override
     public void saveContent(String content) throws IOException {
-        new ContentFileWriter().writeContent(this.file, content);
+        new FileWriter(this.file).writeContent(content);
     }
 }
