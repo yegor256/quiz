@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,41 +29,42 @@ public class ParserTest {
 
 	
 	@Test
-	public void testGetContentStringWithUnicode() throws IOException {
-	
+	public void testGetContentStringWithUnicode() throws IOException {	
 		parser.saveContent(LATIN_WITH_UNICODE);
-		assertTrue(LATIN_WITH_UNICODE.equals(parser.getContent()));
+		assertTrue(LATIN_WITH_UNICODE.equals(new String(Files.readAllBytes(testFile.toPath()))));
 	}
 
 	@Test
 	public void testGetContentStringWithoutUnicode() throws IOException {	
 		parser.saveContent(LATIN);
-		assertTrue(LATIN.equals(parser.getContent()));
+		assertTrue(LATIN.equals(new String(Files.readAllBytes(testFile.toPath()))));
 	}
 
 	@Test
-	public void testGetContentWithUnicodeStringWithoutUnicode()
+	public void testGetContentWithoutUnicodeStringWithoutUnicode()
 			throws IOException {
 		parser.saveContent(LATIN);
-		assertTrue(LATIN.equals(parser.getContent()));
+		String actual = new String(Files.readAllBytes(testFile.toPath()));
+		assertTrue(LATIN.equals(actual));
 	}
 
 	@Test
 	public void testGetContentWithoutUnicodeStringWithUnicode() throws IOException {
 		parser.saveContent(LATIN_WITH_UNICODE);
-		assertFalse(LATIN_WITH_UNICODE.equals(parser.getContentWithoutUnicode()));
+		String actual = new String(Files.readAllBytes(testFile.toPath())).replaceAll("\\p{Print}", "");
+		assertFalse(LATIN_WITH_UNICODE.equals(actual));
 	}
 	
 	@Test
 	public void testSaveContentWithoutUnicode() throws IOException {
 		parser.saveContent(LATIN);
-		assertTrue(LATIN.equals(parser.getContent()));
+		assertTrue(LATIN.equals(new String(Files.readAllBytes(testFile.toPath()))));
 	}
 
 	@Test
 	public void testSaveContentWithUnicode() throws IOException {
 		parser.saveContent(LATIN_WITH_UNICODE);
-		assertTrue(LATIN_WITH_UNICODE.equals(parser.getContent()));
+		assertTrue(LATIN_WITH_UNICODE.equals(new String(Files.readAllBytes(testFile.toPath()))));
 	}
 
 }
