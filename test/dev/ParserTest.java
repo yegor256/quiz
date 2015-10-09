@@ -45,7 +45,7 @@ public class ParserTest {
 	@Test
 	public void testGetContentStringWithUnicode() throws IOException {	
 		write(LATIN_WITH_UNICODE);
-		assertTrue(LATIN_WITH_UNICODE.equals(parser.getContent()));
+		assertEquals(LATIN_WITH_UNICODE, parser.getContent());
 	}
 
 	@Test
