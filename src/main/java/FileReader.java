@@ -25,7 +25,7 @@ public class FileReader implements Readable {
         StringBuilder outputString = new StringBuilder();
         try (BufferedReader bufReader = new BufferedReader(new InputStreamReader(
                 new FileInputStream(file), StandardCharsets.UTF_8))
-        ){
+        ) {
             while (true) {
                 int data = bufReader.read();
                 if (data == -1) break; // exit point

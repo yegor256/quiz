@@ -9,10 +9,10 @@ import java.io.IOException;
  * @since 1.6
  */
 public class NoUnicodeReadable implements Readable {
-    Readable contentReader;
+    Readable readable;
 
-    public NoUnicodeReadable(Readable contentReader) {
-        this.contentReader = contentReader;
+    public NoUnicodeReadable(Readable readable) {
+        this.readable = readable;
     }
 
     /**
@@ -21,6 +21,6 @@ public class NoUnicodeReadable implements Readable {
      */
     @Override
     public String read() throws IOException {
-        return this.contentReader.read().replaceAll("[^\\u0000-\\uFFFF]", "");
+        return this.readable.read().replaceAll("[^\\u0000-\\uFFFF]", "");
     }
 }
