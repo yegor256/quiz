@@ -15,6 +15,12 @@ public class Parser {
   private Parser(){
 
   }
+  public Parser(File file) throws IOException {
+    this.file = file;
+    initContent();
+    initContentWithoutUnicode();
+  }
+
   private void initContentWithoutUnicode() throws IOException {
     FileInputStream inputStream = null;
     String output = "";
@@ -38,11 +44,6 @@ public class Parser {
   }
   private void initContent() throws IOException {
     content = new String(Files.readAllBytes(Paths.get(file.toURI())));
-  }
-  public Parser(File file) throws IOException {
-    this.file = file;
-    initContent();
-    initContentWithoutUnicode();
   }
 
   public File getFile() {
