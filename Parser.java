@@ -62,5 +62,7 @@ public class Parser {
             new FileOutputStream(file)))) {
       writer.write(content);
     }
+    initContent();
+    initContentWithoutUnicode();
   }
 }
