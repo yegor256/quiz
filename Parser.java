@@ -4,25 +4,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * This class is thread safe.
+ * This class is more thread safe.
  */
 public class Parser {
     private File file;
 
     /**
-     * Sets file.
+     * Constructor.
      * @param f file
      */
-    public void setFile(final File f) {
+    public Parser(final File f) {
         this.file = f;
-    }
-
-    /**
-     * Return file
-     * @return file
-     */
-    public File getFile() {
-        return this.file;
     }
 
     /**
@@ -86,6 +78,7 @@ public class Parser {
             }
         }
     }
+
 
     /**
      * Read data prcoessor.
