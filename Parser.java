@@ -13,7 +13,7 @@ public class Parser {
      * Sets file.
      * @param f file
      */
-    public synchronized void setFile(final File f) {
+    public void setFile(final File f) {
         this.file = f;
     }
 
@@ -21,7 +21,7 @@ public class Parser {
      * Return file
      * @return file
      */
-    public synchronized File getFile() {
+    public File getFile() {
         return this.file;
     }
 
