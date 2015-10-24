@@ -21,21 +21,22 @@ public class Parser {
 	// XXX: Combine getContent... methods
 	// XXX: Obtain file by getFile method
 	// XXX: close method
+	// XXX: Append data to StringBuffer instead of string
 	public synchronized String getContent(boolean unicode) throws IOException {
 		FileInputStream i = new FileInputStream(getFile());
-		String output = "";
+		StringBuffer output = new StringBuffer();
 		int data;
 		while ((data = i.read()) > 0) {
 			if (!unicode) {
 				if (data < 0x80) {
-					output += (char) data;
+					output.append((char) data);
 				}
 			} else {
-				output += (char) data;
+				output.append((char) data);
 			}
 		}
 		i.close();
-		return output;
+		return output.toString();
 	}
 
 	// XXX: synchronized saveContent method
