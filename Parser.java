@@ -7,12 +7,19 @@ import java.io.IOException;
  */
 public class Parser {
   private File file;
-  public synchronized void setFile(File f) {
+  
+  public Parser(File file){
+	  this.file = file;
+  }
+ /* 
+  * publishing file reference is dangerous 
+  * as it will produce unexpexted results
+  * public synchronized void setFile(File f) {
     file = f;
   }
   public synchronized File getFile() {
     return file;
-  }
+  } */
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
