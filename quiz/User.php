@@ -18,9 +18,7 @@ class User {
 	 * @return \quiz\Document
 	 */
 	public function makeNewDocument($name) {
-		$doc = new Document ();
-		$doc->init ( $name, $this );
-		return $doc;
+		return new Document ($name, $this);
 	}
 	
 	/**
