@@ -16,16 +16,17 @@ class Document {
 	 *
 	 * @var User
 	 */
-	public $user;
+	protected $user;
 	
 	/**
 	 *
 	 * @var string
 	 */
-	public $name;
+	protected $name;
 	
 	/**
-	 * Constructor 
+	 * Constructor
+	 * 
 	 * @param string $name        	
 	 * @param User $user        	
 	 * @throws \Exception
@@ -47,7 +48,7 @@ class Document {
 	 */
 	protected function getDocumentColumn($prop) {
 		$db = Database::getInstance ();
-		$row = $db->query ( 'SELECT "' . $prop . '" FROM document WHERE name = "' . $this->name . '" LIMIT 1' );
+		$row = $db->query ( 'SELECT "' . $prop . '" FROM document WHERE name = "' . $this->getName () . '" LIMIT 1' );
 		return $row [0];
 	}
 	
@@ -76,5 +77,23 @@ class Document {
 	 */
 	public static function getAllDocuments() {
 		// to be implemented later
+	}
+	
+	/**
+	 * Get User
+	 * 
+	 * @return User
+	 */
+	public function getUser() {
+		return $this->user;
+	}
+	
+	/**
+	 * Get Name
+	 * 
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name;
 	}
 }
