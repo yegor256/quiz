@@ -25,12 +25,12 @@ class Document {
 	public $name;
 	
 	/**
-	 * 
-	 * @param string $name
-	 * @param User $user
+	 * Constructor 
+	 * @param string $name        	
+	 * @param User $user        	
 	 * @throws \Exception
 	 */
-	public function __construct ($name, User $user){
+	function __construct($name, User $user) {
 		if (! assert ( strlen ( $name ) > 5 )) {
 			throw new \Exception ( "name bust me 6 or more characters long" );
 		}
@@ -40,7 +40,7 @@ class Document {
 	
 	/**
 	 * Get Document Column
-	 * 
+	 *
 	 * @param string $prop
 	 *        	- column name
 	 * @return unknown
