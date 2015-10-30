@@ -6,8 +6,9 @@ public class Parser {
 
     // TODO: actually its better to pass a stream instead of file because its more universal
     public String getContent(File file) throws IOException {
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
             byte[] buffer = new byte[BUFFER_SIZE];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) > 0) {
@@ -19,8 +20,8 @@ public class Parser {
 
     // TODO: actually its better to pass a stream instead of file because its more universal
     public String getContentWithoutUnicode(File file) throws IOException {
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             int data;
             while ((data = inputStream.read()) > 0) {
                 if (isAnAsciiSymbol(data)) {
@@ -33,8 +34,8 @@ public class Parser {
 
     // TODO: actually its better to pass a stream instead of file because its more universal
     public void saveContent(String content, File file) throws IOException {
-        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes());
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
+             ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes())) {
             byte[] buffer = new byte[BUFFER_SIZE];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) > 0) {
