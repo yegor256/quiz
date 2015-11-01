@@ -13,7 +13,7 @@ class Document {
 
     public function getTitle() {
         $db = Database::getInstance();
-        $row = $db->query('SELECT Title FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+        $row = $db->query('SELECT title FROM document WHERE name = "' . $this->name . '" LIMIT 1');
         return $row[0];
     }
 
