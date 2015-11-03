@@ -5,33 +5,33 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
+public class Parser { 
+  private synchronized File file;
+  public void setFile(File f) {
     file = f;
   }
-  public synchronized File getFile() {
+  public File getFile() {
     return file;
   }
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
-    String output = "";
+    StringBuilder output = new StringBuilder();
     int data;
     while ((data = i.read()) > 0) {
-      output += (char) data;
+      output.append((char) data);
     }
-    return output;
+    return output.toString();
   }
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
-    String output = "";
+    StringBuilder output = new StringBuilder();
     int data;
     while ((data = i.read()) > 0) {
       if (data < 0x80) {
-        output += (char) data;
+        output.append((char) data);
       }
     }
-    return output;
+    return output.toString();
   }
   public void saveContent(String content) throws IOException {
     FileOutputStream o = new FileOutputStream(file);
