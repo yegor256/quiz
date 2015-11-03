@@ -6,18 +6,18 @@ import java.util.Optional;
  * integer that cannot be converted to its ASCII equivalent.
  */
 public class FilteringParser extends DefaultParser {
-  private static final int MAX_ASCII_CHAR_COUNT = 128;
+	private static final int MAX_ASCII_CHAR_COUNT = 128;
 
-  public FilteringParser(final File file) {
-    super(file);
-  }
+	public FilteringParser(final File file) {
+		super(file);
+	}
 
-  @Override
-  protected Optional<Character> parse(final int data) {
-    Optional<Character> ch = Optional.empty();
-    if (data < FilteringParser.MAX_ASCII_CHAR_COUNT) {
-      ch = Optional.of((char) data);
-    }
-    return ch;
-  }
+	@Override
+	protected Optional<Character> parse(final int data) {
+		Optional<Character> ch = Optional.empty();
+		if (data < FilteringParser.MAX_ASCII_CHAR_COUNT) {
+			ch = Optional.of((char) data);
+		}
+		return ch;
+	}
 }
