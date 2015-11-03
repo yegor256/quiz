@@ -1,26 +1,36 @@
 <?php
 class Document {
 
-    public $user;
+    private $id;
+    private $user;
 
-    public $name;
-
-    public function init($name, User $user) {
-        assert(strlen($name) > 5);
+    public function __construct($id, User $user) {
+        $this->id = $id;
         $this->user = $user;
-        $this->name = $name;
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        return Database::getInstance()->query('SELECT title FROM document WHERE id = ?', [$this->id])[0];
     }
 
     public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        return Database::getInstance()->query('SELECT content FROM document WHERE id = ?', [$this->id])[0];
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public static function create($name, User $user) {
+        assert(strlen($name) > 5);
+        return new self(
+            Database::getInstance()->query(
+                'INSERT INTO document (name, user_id) VALUES (?, ?, ?, ?) RETURNING id', 
+                [$name, $user->getId()]
+            )[0],
+            $user
+        );
     }
 
     public static function getAllDocuments() {
@@ -32,15 +42,13 @@ class Document {
 class User {
 
     public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
-        return $doc;
+        return Document::create($name, $this);
     }
 
     public function getMyDocuments() {
         $list = array();
         foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
+            if ($doc->getUser() == $this)
                 $list[] = $doc;
         }
         return $list;
