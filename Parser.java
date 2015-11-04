@@ -28,7 +28,7 @@ public class Parser {
     try {
       StringBuilder output = new StringBuilder();
       int data;
-      while ((data = i.read()) > 0) {
+      while ((data = i.read()) != -1) {
         if (withUnicode || data < 0x80) {
           output.append((char) data);
         }
