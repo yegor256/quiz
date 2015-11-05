@@ -1,42 +1,68 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    private final File file;
+
+
+    public Parser(File file) {
+        this.file = file;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    /**
+     * Get the file to read to/from
+     *
+     * @return file
+     */
+    public File getFile() {
+        return this.file;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    /**
+     * Get content of the file with unicode
+     *
+     * @return String file content
+     * @throws IOException
+     */
+    public String getContent() throws IOException {
+        return getFileContent(false);
     }
-  }
+
+    /**
+     * Get content of the file without unicode
+     *
+     * @return String file content
+     * @throws IOException
+     */
+    public String getContentWithoutUnicode() throws IOException {
+        return getFileContent(true);
+    }
+
+    /**
+     * Save content to the file
+     *
+     * @param content to save
+     * @throws IOException
+     */
+    public void saveContent(String content) throws IOException {
+        try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file))) {
+            bufferedOutputStream.write(content.getBytes());
+        }
+    }
+
+    private String getFileContent(boolean withoutUnicode) throws IOException {
+        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file))) {
+            StringBuilder fileContent = new StringBuilder();
+            int data;
+            while ((data = bufferedInputStream.read()) != -1) {
+                if (withoutUnicode && !(data < 0x80)) continue;
+                fileContent.append((char) data);
+            }
+            return fileContent.toString();
+        }
+    }
+
 }
