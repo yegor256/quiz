@@ -3,7 +3,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 /**
- * This class is thread safe.
+ * @deprecated use Files.readAllBytes and Files.write instead (JRE 1.7 and above required) 
  */
 public class Parser {
   private File file;
