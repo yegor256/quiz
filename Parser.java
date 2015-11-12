@@ -49,6 +49,7 @@ public class Parser {
         output.append((char) data);
       }
     }
+    i.close();
     return output.toString();
   }
 
