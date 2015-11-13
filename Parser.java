@@ -18,11 +18,9 @@ public class Parser {
     }
     
     public String getContent() throws IOException {
-        FileInputStream inputStream = null;
-        StringBuilder outputBuilder = null;
+        FileInputStream inputStream = new FileInputStream(file);
+        StringBuilder outputBuilder = new StringBuilder();
         try {
-            inputStream = new FileInputStream(file);
-            outputBuilder = new StringBuilder();
             int data;
             while ((data = inputStream.read()) > 0) {
                 outputBuilder.append((char) data);
@@ -34,11 +32,9 @@ public class Parser {
     }
     
     public String getContentWithoutUnicode() throws IOException {
-        FileInputStream inputStream = null;
-        StringBuilder outputBuilder = null;
+        FileInputStream inputStream = new FileInputStream(file);
+        StringBuilder outputBuilder = new StringBuilder();
         try {
-            inputStream = new FileInputStream(file);
-            outputBuilder = new StringBuilder();
             int data;
             while ((data = inputStream.read()) > 0) {
                 if (data < 0x80) {
@@ -53,15 +49,13 @@ public class Parser {
     }
     
     public void saveContent(String content) throws IOException {
-        FileOutputStream outputStream = null;
+        FileOutputStream outputStream = new FileOutputStream(file);
         try {
-            outputStream = new FileOutputStream(file);
             for (int i = 0; i < content.length(); ++i) {
                 outputStream.write(content.charAt(i));
             }
         } finally {
             outputStream.close();
         }
-        
     }
 }
