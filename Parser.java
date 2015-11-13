@@ -8,24 +8,24 @@ import java.io.IOException;
 public class Parser {
   private File file;
   public synchronized void setFile(File f) {
-    file = f;
+    this.file = f;
   }
   public synchronized File getFile() {
-    return file;
+    return this.file;
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
+  public synchronized String getContent() throws IOException {
+    FileInputStream i = new FileInputStream(this.file);
     String output = "";
-    int data;
+    int data = 0;
     while ((data = i.read()) > 0) {
       output += (char) data;
     }
     return output;
   }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
+  public synchronized String getContentWithoutUnicode() throws IOException {
+    FileInputStream i = new FileInputStream(this.file);
     String output = "";
-    int data;
+    int data = 0;
     while ((data = i.read()) > 0) {
       if (data < 0x80) {
         output += (char) data;
@@ -33,9 +33,9 @@ public class Parser {
     }
     return output;
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
+  public synchronized void saveContent(String content) throws IOException {
+    FileOutputStream o = new FileOutputStream(this.file);
+    for (int i = 0; i < content.length(); i++) {
       o.write(content.charAt(i));
     }
   }
