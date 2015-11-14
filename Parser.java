@@ -7,14 +7,17 @@ import java.io.IOException;
  */
 public class Parser {
   private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+  private FileInputStream i;
+  private FileOutputStream o;
+  public synchronized void setFile(String f) {
+	  
+    file = new File(f);
   }
   public synchronized File getFile() {
     return file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
+    i = new FileInputStream(file);
     String output = "";
     int data;
     while ((data = i.read()) > 0) {
@@ -23,7 +26,7 @@ public class Parser {
     return output;
   }
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
+    i = new FileInputStream(file);
     String output = "";
     int data;
     while ((data = i.read()) > 0) {
@@ -34,7 +37,7 @@ public class Parser {
     return output;
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
+    o = new FileOutputStream(file);
     for (int i = 0; i < content.length(); i += 1) {
       o.write(content.charAt(i));
     }
