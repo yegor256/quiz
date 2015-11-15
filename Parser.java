@@ -16,7 +16,7 @@ public class Parser {
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
-    int data;
+    int data = 0;
     while ((data = i.read()) > 0) {
       output += (char) data;
     }
@@ -25,7 +25,7 @@ public class Parser {
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
-    int data;
+    int data = 0;
     while ((data = i.read()) > 0) {
       if (data < 0x80) {
         output += (char) data;
@@ -35,7 +35,7 @@ public class Parser {
   }
   public void saveContent(String content) throws IOException {
     FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
+    for (int i = 0; i < content.length(); i++) {
       o.write(content.charAt(i));
     }
   }
