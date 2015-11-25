@@ -6,7 +6,8 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  * 
- * Change class name to ContentService Remove "Content" from the methods
+ * Change class name to ContentService 
+ * Remove "Content" from the methods
  */
 public class Parser {
 
@@ -22,39 +23,39 @@ public class Parser {
 
 	public synchronized String getContent() throws IOException {
 		FileInputStream inputStream = null;
-		String content = "";
+		StringBuilder contentBuilder = new StringBuilder();
 
 		try {
 			inputStream = new FileInputStream(file);
 			int data;
 			while ((data = inputStream.read()) > 0) {
-				content += (char) data;
+				contentBuilder.append((char) data);
 			}
 
 		} finally {
 			if (inputStream != null)
 				inputStream.close();
 		}
-		return content;
+		return contentBuilder.toString();
 	}
 
 	public synchronized String getContentWithoutUnicode() throws IOException {
 		FileInputStream inputStream = null;
-		String content = "";
+		StringBuilder contentBuilder = new StringBuilder();
 
 		try {
 			inputStream = new FileInputStream(file);
 			int data;
 			while ((data = inputStream.read()) > 0) {
 				if (data < 0x80) {
-					content += (char) data;
+					contentBuilder.append((char) data);
 				}
 			}
 		} finally {
 			if (inputStream != null)
 				inputStream.close();
 		}
-		return content;
+		return contentBuilder.toString();
 	}
 
 	public synchronized void saveContent(String content) throws IOException {
