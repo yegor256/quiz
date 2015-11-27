@@ -6,14 +6,13 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
+  /**
+   * Reads and return file content
+   * @param file
+   * @return
+   * @throws IOException
+   */
+  public static String getContent(File file) throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
@@ -22,7 +21,14 @@ public class Parser {
     }
     return output;
   }
-  public String getContentWithoutUnicode() throws IOException {
+
+  /**
+   * Reads and returns file content without unicode characters
+   * @param file
+   * @return
+   * @throws IOException
+   */
+  public static String getContentWithoutUnicode(File file) throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
@@ -33,7 +39,14 @@ public class Parser {
     }
     return output;
   }
-  public void saveContent(String content) throws IOException {
+
+  /**
+   * Adds content to a file
+   * @param file
+   * @param content
+   * @throws IOException
+   */
+  public static void saveContent(File file, String content) throws IOException {
     FileOutputStream o = new FileOutputStream(file);
     for (int i = 0; i < content.length(); i += 1) {
       o.write(content.charAt(i));
