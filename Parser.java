@@ -1,7 +1,9 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+
 /**
  * This class is thread safe.
  */
@@ -33,10 +35,28 @@ public class Parser {
     }
     return output;
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+  /**
+   * Saves {@code content} to file as UTF-8 encoded text. Truncates file if already exists.
+   * @param content text to save
+     */
+  public synchronized void saveContent(final String content) {
+    if (file == null) {
+      throw new IllegalStateException("file is not set");
+    }
+    if (content == null) {
+      throw new IllegalArgumentException("content could not be null");
+    }
+    try (final BufferedWriter writer = Files.newBufferedWriter(file.toPath())) {
+      writer.write(content, 0, content.length());
+    } catch (IOException ex) {
+      throw new ParsingException(ex);
+    }
+  }
+
+  public static class ParsingException extends RuntimeException {
+    public ParsingException(final Throwable cause) {
+      super(cause);
     }
   }
 }
