@@ -41,6 +41,9 @@ public class Parser {
    * @param content text to save
      */
   public synchronized void saveContent(final String content) {
+    if (file == null) {
+      throw new IllegalStateException("file is not set");
+    }
     if (content == null) {
       throw new IllegalArgumentException("content could not be null");
     }
