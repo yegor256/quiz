@@ -1,48 +1,94 @@
 <?php
+
 class Document {
 
-    public $user;
+    /**
+     * @var string
+     */
+    private $name;
 
-    public $name;
+    /**
+     * @var Database
+     */
+    private $db;
 
-    public function init($name, User $user) {
-        assert(strlen($name) > 5);
-        $this->user = $user;
+    /**
+     * @param $name
+     * @param User $user
+     */
+    public function __construct($name){
         $this->name = $name;
+
+        $this->assertDocumentName();
+        $this->db = Database::getInstance();
     }
 
-    public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->db->query('SELECT title FROM document WHERE name = "' . $this->name . '" LIMIT 1')[0];
     }
 
-    public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+    /**
+     * @return mixed
+     */
+    public function getContent()
+    {
+        return $this->db->query('SELECT content FROM document WHERE name = "' . $this->name . '" LIMIT 1')[0];
     }
 
+    /**
+     * Assert function
+     */
+    private function assertDocumentName(){
+        assert(strlen($this->name) > 5);
+    }
+
+    /**
+     * @return mixed
+     */
     public static function getAllDocuments() {
-        // to be implemented later
+        return $this->db->query('SELECT * FROM document"');
     }
 
 }
 
 class User {
 
-    public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
-        return $doc;
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @return int
+     */
+    public function getId(){
+        return $this->id;
     }
 
-    public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
+    /**
+     * @param $name
+     * @return Document
+     */
+    public function makeNewDocument($name)
+    {
+        return new Document($name);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMyDocuments()
+    {
+        $list = [];
+
+        foreach (Document::getAllDocuments() as $doc)
+            if ($doc->user->id == $this->getId())
                 $list[] = $doc;
-        }
+
         return $list;
     }
 
