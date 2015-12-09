@@ -5,7 +5,7 @@ class Document {
     /**
      * @var string
      */
-    public $name;
+    private $name;
 
     /**
      * @var Database
