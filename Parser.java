@@ -34,9 +34,14 @@ public class Parser {
     return output;
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
+	// What use is just locking the file in getFile() and setFile() methods?
+	// In order to be truly thread-safe, the file needs to be locked when its actually writing data to the disk, 
+	// so no two threads on the monitor try to do this at the same time (and thus cause data-corruption)
+	synchronized(file) {
+		FileOutputStream o = new FileOutputStream(file);
+		for (int i = 0; i < content.length(); i += 1) {
+		  o.write(content.charAt(i));
+		}
+	}
   }
 }
