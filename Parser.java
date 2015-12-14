@@ -11,17 +11,21 @@ public class Parser {
     }
 
     public String getContent() throws IOException {
-        return getContentWithoutUnicode(false)
+        return getContent(false)
     }
 
-    public String getContentWithoutUnicode(boolean skipUnicode) throws IOException {
+    public String getContentWithoutUnicode() throws IOException {
+        return getContent(true);
+    }
+
+    private String getContent(boolean skipUnicode){
         FileInputStream i = new FileInputStream(file);
-        String output = "";
+        StringBuilder output = new StringBuilder();
         int data;
         while ((data = i.read()) > skipUnicode ? 0x80 : 0) {
-            output += (char) data;
+            output.append((char)data);
         }
-        return output;
+        return output.toString();
     }
 
     /**
