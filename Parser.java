@@ -7,29 +7,23 @@ import java.io.IOException;
  */
 public class Parser {
   private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+
+  public Parser(File file) {
+    this.file = file;
   }
-  public synchronized File getFile() {
-    return file;
-  }
+
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+    return getContentWithoutUnicode(false)
   }
-  public String getContentWithoutUnicode() throws IOException {
+  public String getContentWithoutUnicode(boolean skipUnicode) throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
     while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+      if (skipUnicode && data < 0x80) {
+        continue;
       }
+      output += (char) data;
     }
     return output;
   }
