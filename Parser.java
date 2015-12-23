@@ -11,32 +11,45 @@ public class Parser {
     file = f;
   }
   public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
-  }
-}
+	    return file;
+	  }
+	  public String getContent() throws IOException {
+		  return readFileWithUnicode(true);
+	  } 
+	  public String getContentWithoutUnicode() throws IOException {
+		  return readFileWithUnicode(false);
+	  }
+	  
+	  public String readFileWithUnicode(boolean isUnicodedDataParsed) throws IOException {
+		FileInputStream fis = null;
+		try {
+		    fis = new FileInputStream(file);
+		    String output = "";
+		    int data;
+		    while ((data = fis.read()) > 0) {
+		        if (data < 0x80 || isUnicodedDataParsed) {
+		            output += (char) data;
+		          }
+		    }
+		    return output;
+		} finally {
+			if (fis!=null) {
+				fis.close();  
+			}
+		}
+	  } 
+	  public void saveContent(String content) throws IOException {
+		FileOutputStream fos = null;
+		try {
+	    fos = new FileOutputStream(file);
+	    for (int i = 0; i < content.length(); i += 1) {
+	      fos.write(content.charAt(i));
+	    }
+	    
+		} finally {
+			if (fos!=null) {
+				fos.close();  
+			}
+		}
+	  }
+	}
