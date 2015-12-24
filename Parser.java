@@ -31,7 +31,7 @@ public class Parser
 
     public synchronized String getContentWithoutUnicode() throws IOException
     {
-        StringBuilder fileContents = new StringBuilder((int) file.length() * 2);
+        StringBuilder fileContents = new StringBuilder((int) file.length());
 
         for (byte b : Files.readAllBytes(file.toPath()))
         {
