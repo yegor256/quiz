@@ -1,26 +1,53 @@
 <?php
 class Document {
 
-    public $user;
+    private $name;
 
-    public $name;
+    private $user;
 
-    public function init($name, User $user) {
-        assert(strlen($name) > 5);
+    private $content;
+
+    private $title;
+
+    public function __construct($name, User $user) {
+        $this->setName($name);
+        $this->setUser($user);
+        
+        $this->init($name);
+    }
+
+    public function init($name) {
+        $db = Database::getInstance();
+        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+
+        $this->name = $name;
+        $this->content = $row['content'];
+        $this->title = $row['title'];
+    }
+
+    public function getUser() {
+        return $this->user;
+    }
+
+    public function setUser(User $user) {
         $this->user = $user;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function setName($name) {
+        assert(strlen($name) > 5);
         $this->name = $name;
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        return $this->title;
     }
 
     public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        return $this->content;
     }
 
     public static function getAllDocuments() {
@@ -32,9 +59,7 @@ class Document {
 class User {
 
     public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
-        return $doc;
+        return new Document($name, $this);
     }
 
     public function getMyDocuments() {
