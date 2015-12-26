@@ -1,42 +1,68 @@
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    private File file;
+
+    public synchronized void setFile(File f) {
+        file = f;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public synchronized File getFile() {
+        return file;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public synchronized String getContent() throws IOException {
+        validate();
+
+        Scanner s = null;
+        try {
+            s = new Scanner(file);
+            return s.useDelimiter("\\Z").next(); // DRY
+        }
+        finally {
+            if (s != null) {
+                s.close();
+            }
+        }
     }
-  }
+
+    public synchronized String getContentWithoutUnicode() throws IOException {
+        validate();
+
+        return getContent().replaceAll("[^\\x00-\\x7F]", ""); // reuse get content code
+    }
+
+    public synchronized void saveContent(String content) throws IOException {
+        validate();
+
+        if (content == null) {
+            throw new NullPointerException("new file content is null");
+            //todo: thrown exception or just delete the file?
+        }
+
+        PrintWriter pw = null;
+
+        try {
+            pw = new PrintWriter(file);
+            pw.write(content);
+
+        } finally {
+            if (pw != null) {
+                pw.close();
+            }
+        }
+    }
+
+    private void validate() {
+        if (file == null) {
+            throw new NullPointerException("file is null");
+        }
+    }
 }
