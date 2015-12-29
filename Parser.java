@@ -1,42 +1,62 @@
+import com.sun.istack.internal.NotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+
 /**
- * This class is thread safe.
+ * This class is thread safe and immutable.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+
+  private final File file;
+
+  /**
+   * Creates a new parser instance. Best parser in the world that can be useful
+   * for refactoring quiz and parse some content.
+   * @param file file that you probably want to parse.
+   */
+  public Parser(@NotNull File file) {
+    this.file = file;
   }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+
+  /**
+   * Get file content in a string format.
+   *
+   * @return String content of the file.
+   * @throws IOException
+   */
+  public String readContent() throws IOException {
+    try (FileInputStream inputStream = new FileInputStream(file)) {
+      StringBuilder output = new StringBuilder();
+      int data;
+      while ((data = inputStream.read()) > 0) {
+        output.append((char) data);
       }
+      return output.toString();
     }
-    return output;
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+  /**
+   * Get file content without unicode in a string format.
+   *
+   * @return String content of the file.
+   * @throws IOException
+   */
+  public String readContentWithoutUnicode() throws IOException {
+    try (FileInputStream inputStream = new FileInputStream(file)) {
+      StringBuilder output = new StringBuilder();
+      int data;
+      while ((data = inputStream.read()) > 0) {
+        if (data < 0x80) {
+          output.append((char) data);
+        }
+      }
+      return output.toString();
     }
+  }
+
+  public File getFile() {
+    return file;
   }
 }
