@@ -26,7 +26,7 @@ public class Parser {
 		try (final FileInputStream i = new FileInputStream(file)) {
 
 			int data;
-			while ((data = i.read()) > 0) {
+			while ((data = i.read()) != -1) {
 
 				output.append((char) data);
 			}
@@ -41,7 +41,7 @@ public class Parser {
 		try (final FileInputStream i = new FileInputStream(file)) {
 
 			int data;
-			while ((data = i.read()) > 0) {
+			while ((data = i.read()) != -1) {
 
 				if (data < 0x80) {
 
