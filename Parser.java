@@ -7,6 +7,9 @@ import java.io.IOException;
  */
 public final class Parser {
 
+	private Parser() {
+	}
+
 	/**
 	 * Method returns string content from file.
 	 *
