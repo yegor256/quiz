@@ -15,7 +15,7 @@ import java.io.IOException;
  * @author marcelanita
  *
  */
-public class Parser{
+public class Parser {
 	 private File file;
 	  public synchronized void setFile(File f) {
 	    file = f;
