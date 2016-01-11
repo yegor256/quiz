@@ -36,7 +36,7 @@ public class Parser {
     return retainOnlyAscii(getContent());
   }
 
-  private String retainOnlyAscii(String originalContent) {
+  protected final String retainOnlyAscii(String originalContent) {
     int estimatedSize = originalContent.length();
     StringBuilder filtered = new StringBuilder(estimatedSize);
     for (int i = 0; i < estimatedSize; i++) {
