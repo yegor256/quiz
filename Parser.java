@@ -1,42 +1,50 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-/**
- * This class is thread safe.
- */
+import java.io.*;
+
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+
+  private static final int ESTIMATED_FILE_SIZE = 10 * 1024;
+
+  private final File file;
+
+  public Parser(File file) {
+    this.file = file;
   }
-  public synchronized File getFile() {
-    return file;
-  }
+
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    StringBuilder content = new StringBuilder(ESTIMATED_FILE_SIZE);
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+      String line;
+      boolean first = true;
+      while ((line = reader.readLine()) != null) {
+        if (!first) {
+          content.append(System.lineSeparator());
+        }
+        first = false;
+        content.append(line);
       }
     }
-    return output;
+    return content.toString();
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+  public synchronized void saveContent(String content) throws IOException {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+      writer.write(content);
     }
+  }
+
+  public String getContentWithoutUnicode() throws IOException {
+    return retainOnlyAscii(getContent());
+  }
+
+  protected final String retainOnlyAscii(String originalContent) {
+    int estimatedSize = originalContent.length();
+    StringBuilder filtered = new StringBuilder(estimatedSize);
+    for (int i = 0; i < estimatedSize; i++) {
+      char charAt = originalContent.charAt(i);
+      if (charAt < 0x80) {
+        filtered.append(charAt);
+      }
+    }
+    return filtered.toString();
   }
 }
