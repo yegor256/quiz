@@ -15,7 +15,7 @@ public class ParsedFile {
    * Constructor of Parser.
    * @param f the file to be parsed.
    */
-  public Parser (File f){
+  public ParsedFile (File f){
         file=f;
   }
   /**
