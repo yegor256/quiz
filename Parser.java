@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public class Parser {
+public class ParsedFile {
  /**
   * The file to be parsed.
   */
@@ -22,7 +22,7 @@ public class Parser {
    * Returns the file that is being parsed.
    * @return the file that is being parsed.
    */
-  public synchronized File getFile() {
+  public synchronized File file() {
     return file;
   }
   
@@ -32,7 +32,7 @@ public class Parser {
    * @return  returns the content.
    * @throws IOException  if there is a problem reading the file.
    */
-  public synchronized String getContent(boolean withoutUnicode) throws IOException {
+  public synchronized String content(boolean withoutUnicode) throws IOException {
         FileInputStream i = new FileInputStream(file);
         StringBuilder output =new StringBuilder();
         int data;
@@ -54,7 +54,7 @@ public class Parser {
      * @param content the content to be written to the file.
      * @throws IOException if there is a problem writting the file.
      */
-  public synchronized void saveContent(String content) throws IOException {
+  public synchronized void save(String content) throws IOException {
     FileOutputStream o = new FileOutputStream(file);
     for (int i = 0; i < content.length(); i += 1) {
       o.write(content.charAt(i));
