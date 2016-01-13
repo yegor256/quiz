@@ -30,6 +30,7 @@ public class Parser {
             while ((data = i.read()) > 0) {
                 sb.append((char) data);
             }
+
             return sb.toString();
         }
     }
@@ -43,6 +44,7 @@ public class Parser {
                     sb.append((char) data);
                 }
             }
+
             return sb.toString();
         }
     }
