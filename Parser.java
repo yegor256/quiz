@@ -1,29 +1,40 @@
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * This class is thread safe.
+ * Represents thread-safe file parser.
+ *
  * @author Alexey Krylov
  * @since 14.01.2016
  */
 public class Parser {
-    /**
-     * ASCII character set ending.
-     */
-    private static final int C_ASCII_END = 0x80;
-    private File file;
+    protected File file;
 
-    public synchronized void setFile(File f) {
-        file = f;
-    }
-
-    public synchronized File getFile() {
+    public File getFile() {
         return file;
     }
 
-    public synchronized String getContent() throws IOException {
+    public Parser(File file) throws IOException {
+        if (file == null) {
+            throw new NullPointerException("Specified file is null");
+        }
+
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new IOException(String.format("File [%s] exists but is a directory", file));
+            }
+            if (!file.canRead()) {
+                throw new IOException(String.format("File [%s] is unreadable", file));
+            }
+        } else {
+            throw new FileNotFoundException(String.format("File [%s] does not exists", file));
+        }
+        this.file = file;
+    }
+
+    public String parse() throws IOException {
         try (FileInputStream i = new FileInputStream(file)) {
             StringBuilder sb = new StringBuilder();
             int data;
@@ -32,28 +43,6 @@ public class Parser {
             }
 
             return sb.toString();
-        }
-    }
-
-    public synchronized String getContentWithoutUnicode() throws IOException {
-        try (FileInputStream i = new FileInputStream(file)) {
-            StringBuilder sb = new StringBuilder();
-            int data;
-            while ((data = i.read()) > 0) {
-                if (data < C_ASCII_END) {
-                    sb.append((char) data);
-                }
-            }
-
-            return sb.toString();
-        }
-    }
-
-    public synchronized void saveContent(String content) throws IOException {
-        try (FileOutputStream o = new FileOutputStream(file)) {
-            for (int i = 0; i < content.length(); i += 1) {
-                o.write(content.charAt(i));
-            }
         }
     }
 }
