@@ -8,7 +8,7 @@ import java.io.IOException;
 public class Parser {
   private File file;
   public synchronized void setFile(File f) {
-    if(null = file)
+    if(null == file)
       file = f;
     else return;
   }
