@@ -2,26 +2,47 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
+  private volatile File file;
+  
   public synchronized void setFile(File f) {
     file = f;
   }
-  public synchronized File getFile() {
+  
+  public  File getFile() {
     return file;
   }
+  
+  /**
+   * Returns contents of the file as String 
+   * 
+   * @return
+   * @throws IOException
+   */
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    
+    try {
+    StringWriter stringWriter = new StringWriter();
+    //Configurable chunk 10 kbs here
+    byte[] buffer = new byte[1024*10];
+   
+    while (i.read(buffer) > 0) {
+    	stringWriter.append(new String(buffer));
+     }
+    
+    return stringWriter.toString();
+    
+    } finally {
+    	i.close();
     }
-    return output;
+    
   }
+  
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
@@ -33,10 +54,21 @@ public class Parser {
     }
     return output;
   }
+  
+  /**
+   * Save the content in a file
+   * 
+   * @param content
+   * @throws IOException
+   */
   public void saveContent(String content) throws IOException {
+	
     FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    
+    try {
+    	o.write(content.getBytes());
+    } finally {
+    	o.close();
     }
   }
 }
