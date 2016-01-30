@@ -2,41 +2,42 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
+  private final File file;
+  private static final int FIRST_UNICODE_CHAR = 0x80;
+  public Parser (File f) {
     file = f;
   }
-  public synchronized File getFile() {
+  public File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
+  private String readContent(boolean supportUnicode) throws IOException {
     FileInputStream i = new FileInputStream(file);
-    String output = "";
+    StringBuilder output = new StringBuilder();
     int data;
     while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+      if (supportUnicode || data < FIRST_UNICODE_CHAR) {
+        output.append((char)data);
       }
     }
-    return output;
+    i.close();
+    return output.toString();
+  }
+  public String getContent() throws IOException {
+    return readContent(true);
+  }
+  public String getContentWithoutUnicode() throws IOException {
+    return readContent(false);
   }
   public void saveContent(String content) throws IOException {
     FileOutputStream o = new FileOutputStream(file);
     for (int i = 0; i < content.length(); i += 1) {
       o.write(content.charAt(i));
     }
+    o.close();
   }
 }
