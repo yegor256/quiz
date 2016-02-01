@@ -5,7 +5,7 @@ class Document {
 
     public $name;
 
-    public function init($name, User $user) {
+    public function init($name, $user) {
         assert(strlen($name) > 5);
         $this->user = $user;
         $this->name = $name;
@@ -24,7 +24,8 @@ class Document {
     }
 
     public static function getAllDocuments() {
-        // to be implemented later
+        // to be implemented laterre
+        return $this;
     }
 
 }
@@ -40,7 +41,7 @@ class User {
     public function getMyDocuments() {
         $list = array();
         foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
+            if ($doc->user == $this->user)
                 $list[] = $doc;
         }
         return $list;
