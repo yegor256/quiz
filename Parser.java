@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 public class Parser {
 
 	/**
-	 * The buffer size to use when reading to and writing from files. Higher values mean more memory consumption but less read or
+	 * The buffer size to use when reading from and writing to files. Higher values mean more memory consumption but less read or
 	 * write operations.
 	 */
 	private static final int BUFSIZE = 1024;
