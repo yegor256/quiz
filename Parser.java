@@ -13,16 +13,46 @@ public class Parser {
   public synchronized File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
+  
+  /**
+   * Parse file content and save.
+   * 
+   * @param withoutUnicode Set to true to skip Unicode
+   * @throws IOException
+   */
+  public void parse(boolean withoutUnicode) throws IOException{
+	  String content;
+	  
+	  if(withoutUnicode){
+		  content = getContentWithoutUnicode();
+	  }
+	  else{
+		  content = getContent();
+	  }
+	  
+	  saveContent(content);
+  }
+  
+  private void saveContent(String content) throws IOException {
+    FileOutputStream o = new FileOutputStream(file);
+    for (int i = 0; i < content.length(); i += 1) {
+    }
+    o.close();
+  }
+  
+  private String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
     while ((data = i.read()) > 0) {
       output += (char) data;
     }
+    i.close();
+
     return output;
   }
-  public String getContentWithoutUnicode() throws IOException {
+  
+  private String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
@@ -30,13 +60,9 @@ public class Parser {
       if (data < 0x80) {
         output += (char) data;
       }
-    }
+    }    
+    i.close();
+
     return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
   }
 }
