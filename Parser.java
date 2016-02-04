@@ -1,45 +1,68 @@
+import android.provider.MediaStore;
+
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.io.BufferedReader;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * This class is thread safe.
  */
 public class FileEditor {
     private File file;
-    private Object syncObject = new Object();
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private final Lock readLock = readWriteLock.readLock();
+    private final Lock writeLock = readWriteLock.writeLock();
+
     public void setFile(File f) {
-        synchronized (syncObject) {
-            file = f;
-        }
+            writeLock.lock();
+            try {
+                file = f;
+            }finally {
+                writeLock.unlock();
+            }
     }
     public File getFile() {
-        synchronized (syncObject){
+            readLock.lock();
+        try {
             return file;
+        }finally {
+            readLock.unlock();
         }
     }
-    public String getFileContent(boolean isInUnicode) throws IOException {
-        synchronized (syncObject) {
+    public String getFileContent(Charset charSet) throws IOException {
+        readLock.lock();
+        try {
             StringBuilder stringBuilder = new StringBuilder();
-            FileInputStream i = new FileInputStream(file);
-            String output = "";
-            int data;
-            while ((data = i.read()) > 0) {
-                if (isInUnicode && data < 0x80) {
-                    stringBuilder.append((char) data);
-                } else {
-                    stringBuilder.append((char) data);
+            try (BufferedReader reader = Files.newBufferedReader(file.toPath(),
+                    charSet)) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    stringBuilder.append(line);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return stringBuilder.toString();
+        } finally {
+            readLock.unlock();
         }
     }
-    public void writeToFile(String str) throws IOException {
-        synchronized (syncObject) {
-            FileOutputStream out = new FileOutputStream(file);
-            for (int i = 0; i < str.length(); i += 1) {
-                out.write(str.charAt(i));
-            }
+    public void writeToFile(String str, Charset charSet) throws IOException {
+        writeLock.lock();
+        try (BufferedWriter writer = Files.newBufferedWriter(file.toPath(), charSet)) {
+            writer.write(str, 0, str.length());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally{
+            writeLock.unlock();
         }
     }
 }
