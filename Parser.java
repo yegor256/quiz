@@ -1,42 +1,32 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    private volatile File file;
+
+    public void setFile(File f) {
+        file = f;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public File getFile() {
+        return file;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public synchronized String getContent() throws IOException {
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        return new String(bytes);
     }
-  }
+
+    public String getContentWithoutUnicode() throws IOException {
+        return getContent().replaceAll("\\P{Print}", "");
+    }
+
+    public synchronized void saveContent(String content) throws IOException {
+        Files.write(file.toPath(), content.getBytes(), StandardOpenOption.CREATE);
+    }
 }
