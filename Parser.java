@@ -2,41 +2,38 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-/**
- * This class is thread safe.
- */
+
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
+  private volatile File file;
+  public void setFile(File f) {
     file = f;
   }
-  public synchronized File getFile() {
+  public File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+  public String getContent(boolean withUnicode) throws IOException {
+	if(file != null) {
+	    try(final FileInputStream i = new FileInputStream(file)) {
+		    StringBuilder output = new StringBuilder();
+		    int data;
+		    while ((data = i.read()) > 0) {
+		    	if (withUnicode || data < 0x80) {
+		    		output.append((char) data);
+		    	}
+		    }
+		    
+		    return output.toString();
+	    }
+	}
+	
+	throw new IllegalArgumentException("File is not set");
   }
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
+	  return getContent(false);
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    try(FileOutputStream o = new FileOutputStream(file)) {
+    	o.write(content.getBytes());
     }
   }
 }
