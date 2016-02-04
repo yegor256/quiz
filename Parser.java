@@ -2,17 +2,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-/**
- * This class is thread safe.
- */
+
+
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+
+  private final  File file;
+
+  public Parser(File file) {
+    this.file = file;
   }
-  public synchronized File getFile() {
-    return file;
-  }
+
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
@@ -38,5 +37,9 @@ public class Parser {
     for (int i = 0; i < content.length(); i += 1) {
       o.write(content.charAt(i));
     }
+  }
+
+  public File getFile() {
+    return file;
   }
 }
