@@ -13,29 +13,50 @@ public class Parser {
   }
 
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    FileInputStream inputStream = null;
+    try {
+      inputStream = new FileInputStream(file);
+      StringBuilder builder = new StringBuilder();
+      int data;
+      while ((data = inputStream.read()) > 0) {
+        builder.append((char) data);
+      }
+      return builder.toString();
+    } finally {
+      if (inputStream != null) {
+        inputStream.close();
       }
     }
-    return output;
   }
+
+  public String getContentWithoutUnicode() throws IOException {
+    FileInputStream inputStream = null;
+    try {
+      inputStream = new FileInputStream(file);
+      StringBuilder builder = new StringBuilder();
+      int data;
+      while ((data = inputStream.read()) > 0) {
+        if (data < 0x80) {
+          builder.append((char) data);
+        }
+      }
+      return builder.toString();
+    } finally {
+      if (inputStream != null) {
+        inputStream.close();
+      }
+    }
+  }
+
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    FileOutputStream outputStream = null;
+    try {
+      outputStream = new FileOutputStream(file);
+      outputStream.write(content.getBytes());
+    } finally {
+      if (outputStream != null) {
+        outputStream.close();
+      }
     }
   }
 
