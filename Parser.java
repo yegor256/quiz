@@ -73,7 +73,7 @@ public class Parser {
             return output;
         }
     }
-    public synchronized void saveContent(String newContent) throws IOException {
+    public void saveContent(String newContent) throws IOException {
         synchronized (file.getCanonicalPath().intern()){
             FileOutputStream o = new FileOutputStream(file);
             for (int i = 0; i < newContent.length(); i += 1) {
