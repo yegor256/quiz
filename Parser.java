@@ -1,42 +1,78 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-/**
- * This class is thread safe.
- */
+import java.io.*;
+
+
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+
+  private final  File file;
+
+  public Parser(File file) {
+    this.file = file;
   }
-  public synchronized File getFile() {
+
+  public File getFile() {
     return file;
   }
+
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+    FileInputStream fileStream = new FileInputStream(file);
+    return readAndCloseStream(fileStream);
   }
+
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    InputStream fileStream = new FileInputStream(file);
+    InputStream wipeUnicodeStream = new WipeUnicodeInputStream(fileStream);
+    return readAndCloseStream(wipeUnicodeStream);
+  }
+
+  public void saveContent(String content) throws IOException {
+    FileOutputStream outputStream = null;
+    try {
+      outputStream = new FileOutputStream(file);
+      outputStream.write(content.getBytes());
+    } finally {
+      if (outputStream != null) {
+        outputStream.close();
       }
     }
-    return output;
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+  private String readAndCloseStream(InputStream stream) throws IOException {
+    try {
+      StringBuilder builder = new StringBuilder();
+      int data;
+      while ((data = stream.read()) > 0) {
+        builder.append((char) data);
+      }
+      return builder.toString();
+    } finally {
+      stream.close();
+    }
+  }
+
+
+  /**
+   *  Input Stream skipping all non-unicode characters
+   */
+  private static class WipeUnicodeInputStream extends InputStream {
+    public static final int LAST_NONUNICODE = 0x80;
+    private final InputStream childStream;
+
+    private WipeUnicodeInputStream(InputStream childStream) {
+      this.childStream = childStream;
+    }
+
+    @Override
+    public int read() throws IOException {
+      int value;
+      do {
+        value = childStream.read();
+      } while (value > LAST_NONUNICODE);
+      return value;
+    }
+
+    @Override
+    public void close() throws IOException {
+      childStream.close();
     }
   }
 }
