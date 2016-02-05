@@ -1,42 +1,56 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+
+  public static final int LENGTH = 0x80;
+
+  private ThreadLocal<File> file = new ThreadLocal<File>();
+
+  public void setFile(File f) {
+    file.set(f);
   }
-  public synchronized File getFile() {
-    return file;
+
+  public File getFile() {
+    return file.get();
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
+
+  public final String getContentWithoutUnicode() throws IOException {
+    return getContent(Boolean.TRUE);
+  }
+
+  public final String getContent() throws IOException {
+    return getContent(Boolean.FALSE);
+  }
+
+  public final void saveContent(String content) throws IOException {
+    saveContent(content, "UTF8");
+  }
+
+  protected String getContent(Boolean excludeUnicode) throws IOException {
+    FileInputStream i = new FileInputStream(file.get());
+    StringBuilder output = new StringBuilder();
     int data;
     while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+      char charToWrite = (char) data;
+      if (excludeUnicode) {
+        if (data < LENGTH) {
+          output.append(charToWrite);
+        }
+      } else {
+        output.append(charToWrite);
       }
     }
-    return output;
+    i.close();
+    return output.toString();
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
+
+  protected void saveContent(String content, String enc) throws IOException {
+    BufferedWriter buff = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.get()), enc));
+    buff.append(content);
+    buff.flush();
+    buff.close();
   }
 }
