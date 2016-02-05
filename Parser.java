@@ -1,42 +1,83 @@
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
+
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    private final AtomicReference<File> fileAtm = new AtomicReference<>();
+
+    public Parser(final File f) {
+        this.fileAtm.set(f);
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public File getFile() {
+        return fileAtm.get();
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    /**
+     * Returns the full content of the file
+     *
+     * @return
+     * @throws IOException
+     */
+    public String getContent() throws IOException {
+        //remove to one single method
+        return internalReadFile(true);
     }
-  }
+
+    /**
+     * Returns the content of the file without unicode
+     *
+     * @return
+     * @throws IOException
+     */
+    public String getContentWithoutUnicode() throws IOException {
+        //remove to one single method
+        return internalReadFile(false);
+    }
+
+    /**
+     * Read the file with unicode or without
+     *
+     * @param withoutUnicode
+     *            - boolean to indicate if is need to read with unicode or not
+     * @return
+     * @throws IOException
+     */
+    private String internalReadFile(final boolean withUnicode) throws IOException {
+        //stringbuffer instead of using string
+        final StringBuffer sb = new StringBuffer();
+
+        //try resources, autommatically close the resource
+        try (BufferedReader br = new BufferedReader(new FileReader(getFile()))) {
+            int data;
+            while ((data = br.read()) > 0) {
+                if (withUnicode || data < 0x80) {
+                    sb.append((char) data);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Writes all the content in the File
+     *
+     * @param content
+     * @throws IOException
+     */
+    public void saveContent(final String content) throws IOException {
+
+        try (FileOutputStream o = new FileOutputStream(getFile())) {
+            o.write(content.getBytes());
+        }
+    }
+
 }
