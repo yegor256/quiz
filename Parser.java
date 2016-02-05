@@ -38,7 +38,7 @@ public class Parser {
 		return getContent(false);
 	}
 
-	public void saveContent(final File file, final String content) throws IOException {
+	public void saveContent(final String content) throws IOException {
 		lock.readLock().lock();
 
 		try (final FileOutputStream o = new FileOutputStream(file)) {
