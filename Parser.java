@@ -36,7 +36,7 @@ public class Parser {
 	 * @return content
 	 * @throws IOException
 	 */
-	public String getContent() throws IOException {
+	public synchronized String getContent() throws IOException {
 		BufferedReader reader = Files.newBufferedReader(this.file, Charset
 				.defaultCharset());
 
@@ -55,7 +55,7 @@ public class Parser {
 	 * @return content
 	 * @throws IOException
 	 */
-	public String getContentWithoutUnicode() throws IOException {
+	public synchronized String getContentWithoutUnicode() throws IOException {
 		BufferedReader reader = Files.newBufferedReader(this.file, Charset
 				.defaultCharset());
 
@@ -76,7 +76,7 @@ public class Parser {
 	 * @param content
 	 * @throws IOException
 	 */
-	public void saveContent(String content) throws IOException {
+	public synchronized void saveContent(String content) throws IOException {
 		Files.write(this.file,
 				content.getBytes(), StandardOpenOption.CREATE);
 	}
