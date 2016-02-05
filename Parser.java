@@ -2,41 +2,61 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-/**
- * This class is thread safe.
- */
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
-  }
+
+	private final File file;
+	private final ReentrantReadWriteLock lock;
+
+	public Parser(final File file) {
+		validate(file);
+
+		this.file = file;
+		this.lock = new ReentrantReadWriteLock();
+	}
+
+	public String getContent(final boolean withUnicode) throws IOException {
+		lock.readLock().lock();
+
+		try (final FileInputStream i = new FileInputStream(file)) {
+			final StringBuilder output = new StringBuilder();
+			int data;
+			while ((data = i.read()) > 0) {
+				if (withUnicode || data < 0x80) {
+					output.append((char) data);
+				}
+			}
+
+			return output.toString();
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	public String getContentWithoutUnicode() throws IOException {
+		return getContent(false);
+	}
+
+	public void saveContent(final String content) throws IOException {
+		lock.writeLock().lock();
+
+		try (final FileOutputStream o = new FileOutputStream(file)) {
+			o.write(content.getBytes());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	private void validate(final File file) {
+		if (file == null) {
+			throw new NullPointerException("File cannot be null");
+		}
+		if (!file.exists()) {
+			throw new IllegalArgumentException("File not exists");
+		}
+		if (file.isDirectory()) {
+			throw new IllegalArgumentException("File should be file not directory");
+		}
+	}
 }
