@@ -17,7 +17,7 @@ public class Parser {
 	}
 
 	public String getContent(final boolean withUnicode) throws IOException {
-		lock.writeLock().lock();
+		lock.readLock().lock();
 
 		try (final FileInputStream i = new FileInputStream(file)) {
 			final StringBuilder output = new StringBuilder();
@@ -30,7 +30,7 @@ public class Parser {
 
 			return output.toString();
 		} finally {
-			lock.writeLock().unlock();
+			lock.readLock().unlock();
 		}
 	}
 
@@ -39,12 +39,12 @@ public class Parser {
 	}
 
 	public void saveContent(final String content) throws IOException {
-		lock.readLock().lock();
+		lock.writeLock().lock();
 
 		try (final FileOutputStream o = new FileOutputStream(file)) {
 			o.write(content.getBytes());
 		} finally {
-			lock.readLock().unlock();
+			lock.writeLock().unlock();
 		}
 	}
 
