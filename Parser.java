@@ -17,6 +17,9 @@ public class Parser {
     private Object lock;
 
     public Parser(File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("File cannot be null");
+        }
         this.file = file;
         this.lock = new Object();
     }
@@ -44,7 +47,7 @@ public class Parser {
         }
         synchronized (lock) {
             try {
-                StringBuffer output = new StringBuffer();
+                StringBuilder output = new StringBuilder();
                 int data;
                 while ((data = inputStream.read()) > 0) {
                     if (!withoutUnicode || data < 0x80) {
