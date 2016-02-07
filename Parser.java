@@ -15,9 +15,8 @@ public class Parser {
 	}
 
 	public void saveContent(File file, String content) throws IOException {
-		FileOutputStream o = new FileOutputStream(file);
-		for (int i = 0; i < content.length(); i += 1) {
-			o.write(content.charAt(i));
+		try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+			fileOutputStream.write(content.getBytes());
 		}
 	}
 
