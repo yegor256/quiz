@@ -1,6 +1,7 @@
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 
 public class Parser {
@@ -21,12 +22,13 @@ public class Parser {
 	}
 
 	private String getContent(File file, boolean includeUnicode) throws IOException {
-		FileInputStream i = new FileInputStream(file);
 		String output = "";
-		int data;
-		while ((data = i.read()) > 0) {
-			if (includeUnicode || data < 0x80) {
-				output += (char) data;
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			int data = br.read();
+			while (data > 0) {
+				if (includeUnicode || data < 0x80) {
+					output += data;
+				}
 			}
 		}
 		return output;
