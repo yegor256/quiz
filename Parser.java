@@ -10,6 +10,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * This class is thread safe.
  */
 public class Parser {
+  private static final int FIRST_UNICODE_CHARACTER = 0x80;
+
   private File file;
   private ReadWriteLock rwLock = new ReentrantReadWriteLock();
 
@@ -40,35 +42,53 @@ public class Parser {
   }
 
   public String getContent() throws IOException {
-    StringBuilder output = new StringBuilder();
-    try (FileInputStream i = new FileInputStream(file)) {
-      int data;
-      while ((data = i.read()) > 0) {
-        output.append((char) data);
-      }
-    }
-    return output.toString();
+    return getStringContent(true);
   }
 
   public String getContentWithoutUnicode() throws IOException {
-    StringBuilder output = new StringBuilder();
-    try (FileInputStream i = new FileInputStream(file)) {
-      int data;
-      while ((data = i.read()) > 0) {
-        if (data < 0x80) {
-          output.append((char) data);
-        }
-      }
-    }
-    return output.toString();
+    return getStringContent(false);
   }
 
   public void saveContent(String content) throws IOException {
-    try (FileOutputStream o = new FileOutputStream(file)) {
+    Lock l = rwLock.writeLock();
+    l.lock();
+    try (FileOutputStream o = new FileOutputStream(this.file)) {
       for (int i = 0; i < content.length(); i += 1) {
         o.write(content.charAt(i));
       }
+    } catch (Exception ex) {
+      //...
+    } finally {
+      l.unlock();
     }
   }
-}
+
+  private String getStringContent(boolean withUnicode) throws IOException {
+    StringBuilder output = new StringBuilder();
+
+    Lock l = rwLock.readLock();
+    File file = null;
+    l.lock();
+    try {
+      file = this.file;
+      try (FileInputStream i = new FileInputStream(file)) {
+        int data;
+        while ((data = i.read()) > 0) {
+          if (withUnicode) {
+            output.append((char) data);
+          } else {
+            if (data < FIRST_UNICODE_CHARACTER) {
+              output.append((char) data);
+            }
+          }
+        }
+      }
+    } catch (Exception ex) {
+      //...
+    } finally {
+      l.unlock();
+    }
+
+    return output.toString();
+  }
 }
