@@ -2,41 +2,45 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.function.Predicate;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    private final File file;
+
+    public Parser(File file) {
+        this.file = file;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public String getContent() throws IOException {
+        return getContent(i -> true);
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public String getContentWithoutUnicode() throws IOException {
+        return getContent(i -> i < 0x80);
     }
-  }
+
+    public void saveContent(String content) throws IOException {
+        try (FileOutputStream o = new FileOutputStream(file)) {
+            for (int i = 0; i < content.length(); i += 1) {
+                o.write(content.charAt(i));
+            }
+        }
+    }
+
+    private String getContent(Predicate<Integer> filter) throws IOException {
+        StringBuilder st = new StringBuilder();
+        try (FileInputStream i = new FileInputStream(file)) {
+            int data;
+            while ((data = i.read()) > 0) {
+                if (filter.test(data)) {
+                    st.append(data);
+                }
+            }
+        }
+
+        return st.toString();
+    }
 }
