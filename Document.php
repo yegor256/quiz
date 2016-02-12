@@ -1,49 +1,64 @@
 <?php
+
 class Document {
-
     public $user;
-
     public $name;
 
-    public function init($name, User $user) {
+    public function __construct($name, $user) {
         assert(strlen($name) > 5);
         $this->user = $user;
         $this->name = $name;
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        return $this->getField('title');
     }
 
     public function getContent() {
+        return $this->getField('content');
+    }
+
+    public static function getAllUserDocuments($user) {
         $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        if($result = $db->query('SELECT * FROM document')) {
+            $documents = array();
+            while($row = $result->fetch_assoc()) {
+                $documents[] = new Document($row['name'], $user);
+            }
+            $result->close();
+            return $documents;
+        } else {
+            return array();
+        }
     }
 
-    public static function getAllDocuments() {
-        // to be implemented later
-    }
+    private function getField($field) {
+        $db = Database::getInstance();
+        $stmt = $db->prepare(
+            'SELECT * FROM document WHERE name = ? LIMIT 1');
+        if($stmt) {
+            $stmt->bind_param('s', $this->name);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
 
+            $stmt->close();
+            if($result) {
+                return $result[$field];
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
 }
 
 class User {
-
     public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
-        return $doc;
+        return new Document($name, $this);
     }
 
     public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
-                $list[] = $doc;
-        }
-        return $list;
+        return Document::getAllUserDocuments($this);
     }
-
 }
