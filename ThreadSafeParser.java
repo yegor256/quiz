@@ -1,7 +1,10 @@
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+
 /**
  * This class is thread safe.
  */
@@ -63,9 +66,8 @@ public class ThreadSafeParser {
      */
     public void saveContent(final String content) throws IOException {
         final FileOutputStream fileOutputStream = new FileOutputStream(file);
-        for (final int ii = 0; ii < content.length(); ii += 1) {
+        for (int ii = 0; ii < content.length(); ii += 1) {
             fileOutputStream.write(content.charAt(ii));
         }
     }
-
 }
