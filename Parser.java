@@ -34,9 +34,6 @@ public class Parser {
     return output;
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
+    Files.write(file.toPath(), content.getBytes());
   }
 }
