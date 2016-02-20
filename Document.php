@@ -10,11 +10,33 @@ class Document {
     private $title;
     private $content;
 
+    public static function makeDocument($name, User $user) {
+        assert(strlen($name) > 5);
+        $db = Database::getInstance();
+        $row = $db->insert('insert statement');
+        return new Document($row, $user);
+    }
+
     public static function getDocument($name, User $user) {
         assert(strlen($name) > 5);
         $db = Database::getInstance();
         $row = $db->query('SELECT * FROM document WHERE name = "' . $name . '" LIMIT 1');
         return new Document($row, $user);
+    }
+
+    public static function getAllDocuments(User $user = null){
+        $condition = '';
+        $documents = [];
+
+        if ($user != null) {
+            $condition = ' where userId = ' . $user->getId();
+        }
+        $db = Database::getInstance();
+        $rows = $db->query('SELECT * FROM document ' . $condition);
+        foreach($rows as $row) {
+            $documents[] = new Document($row, $user);
+        }
+        return $documents;
     }
 
     private function __construct($row, User $user) {
@@ -42,27 +64,39 @@ class Document {
     public function getContent() {
         return $this->content;
     }
-
-    public static function getAllDocuments() {
-        // to be implemented later
-    }
-
 }
 
 class User {
 
+    private $id;
+    private $name;
+
+    public function __construct($id, $name) {
+        $this->id = $id;
+        $this->name = $name;
+    }
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
     public function makeNewDocument($name) {
+        $doc = Document::makeDocument($name, $this);
+        return $doc;
+    }
+
+    public function getDocument($name) {
         $doc = Document::getDocument($name, $this);
         return $doc;
     }
 
     public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
-                $list[] = $doc;
-        }
-        return $list;
+        $documents = Document::getAllDocuments($this);
+        return $documents;
     }
 
 }
