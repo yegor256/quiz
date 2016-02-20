@@ -1,6 +1,9 @@
 <?php
 class Document {
 
+    const TITLE_INDEX = 3;
+    const CONTENT_INDEX = 6;
+
     public $user;
 
     public $name;
@@ -14,13 +17,13 @@ class Document {
     public function getTitle() {
         $db = Database::getInstance();
         $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        return $row[self::TITLE_INDEX]; // third column in a row
     }
 
     public function getContent() {
         $db = Database::getInstance();
         $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        return $row[self::CONTENT_INDEX]; // sixth column in a row
     }
 
     public static function getAllDocuments() {
