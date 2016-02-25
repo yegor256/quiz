@@ -6,37 +6,78 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
-  }
+	private File file;
+	
+	/**
+	 * Function to set file.
+	 */
+	public synchronized void setFile(File f) {
+		this.file = f;
+	}
+	
+	/**
+	 * Function to retrieve the file
+	 * @return null if empty.
+	 */
+	public synchronized File getFile() {
+		return this.file;
+	}
+
+	/**
+	 * Function to get the content of the file as a String.
+	 * @return file content if successful, null if empty.
+	 */
+	public synchronized String getContent() throws IOException {
+		String output = null;
+		
+		if(this.file != null) {
+			FileInputStream is = new FileInputStream(this.file);
+			if(is != null) {
+				int data;
+				while ((data = is.read()) > 0) {
+					output += (char) data;
+				}
+				is.close();
+			}
+		}
+		return output;
+	}
+	
+	/**
+	 * Function to get the content of the file as string without unicode.
+	 * @return file content as string if successful, null if empty.
+	 */
+	public synchronized String getContentWithoutUnicode() throws IOException {
+		String output = null;
+
+		if(this.file != null) {
+			FileInputStream is = new FileInputStream(this.file);
+			if(is != null) {
+				int data;
+				while ((data = is.read()) > 0) {
+					if (data < 0x80) {
+						output += (char) data;
+					}
+				}
+				is.close();
+			}
+		}
+		return output;
+	}
+	
+	/**
+	 * Function to write the string content to a file.
+	 */
+	public synchronized void saveContent(String content) throws IOException {
+		if(this.file != null) {
+			FileOutputStream os = new FileOutputStream(this.file);
+			
+			if(os != null) {
+				for (int i = 0; i < content.length(); i++) {
+					os.write(content.charAt(i));
+				}
+				os.close();
+			}
+		}
+	}
 }
