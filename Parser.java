@@ -2,41 +2,89 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
+  private final int EOF = -1;
   private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
+
+  public String getContent() {
     String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
+    FileInputStream inputStream = null;
+    try {
+      inputStream= new FileInputStream(getFile());
+
+      int data;
+      while ((data = inputStream.read()) != EOF) {
         output += (char) data;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if (inputStream != null) {
+        try {
+          inputStream.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
     return output;
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+  public String getContentWithoutUnicode(){
+    String output = "";
+    FileInputStream inputStream = null;
+    try {
+      inputStream = new FileInputStream(getFile());
+      int data;
+      while ((data = inputStream.read()) != EOF) {
+        if (data < 0x80) {
+          output += (char) data;
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if(inputStream != null){
+        try {
+          inputStream.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return output;
+  }
+
+  public void saveContent(String content) {
+    FileOutputStream outputStream = null;
+    try {
+      outputStream = new FileOutputStream(getFile());
+      for (int i = 0; i < content.length(); i++) {
+        outputStream.write(content.charAt(i));
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }finally {
+      if(outputStream != null){
+        try{
+          outputStream.close();
+        }catch (IOException e){
+          e.printStackTrace();
+        }
+      }
     }
   }
+
+  public synchronized File getFile() {
+    return file;
+  }
+
+  public synchronized void setFile(File f) {
+    file = f;
+  }
 }
+
