@@ -22,7 +22,7 @@ public class Parser {
    {
    	   return getContent(-1); 
    }
-  //not always a big fan of default arguments but since this is a refactor, not a greenfield I would leave in case of backwards compatibility issues
+  
   public String getContent(int upperBound) throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
