@@ -1,4 +1,4 @@
-package teamed.quiz;
+package com.teamed.quiz;
 
 import java.io.*;
 import java.nio.channels.FileLock;
@@ -18,7 +18,7 @@ public class Parser {
       this.file = file;
   }
 
-  private synchronized String read(boolean withUnicode) throws java.io.IOException{
+  public synchronized String readContent(boolean withUnicode) throws java.io.IOException{
     StringBuilder sb = new StringBuilder();
     FileInputStream inputStream = null;
     Scanner sc = null;
@@ -47,13 +47,7 @@ public class Parser {
     }
     return sb.toString();
   }
-
-  public synchronized String getContent() throws IOException {
-    return read(true);
-  }
-  public synchronized String getContentWithoutUnicode() throws IOException {
-    return read(false);
-  }
+    
   public void saveContent(String content) throws IOException {
       FileOutputStream fileOutputStream = new FileOutputStream(this.file);
       boolean written = false;
