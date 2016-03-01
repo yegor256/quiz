@@ -1,4 +1,4 @@
-package com.company;
+package teamed.quiz;
 
 import java.io.*;
 import java.nio.channels.FileLock;
