@@ -7,6 +7,7 @@ package io.teamed.quizz;
  * @author jerome
  *
  */
+@FunctionalInterface
 public interface WriteableText {
 
   /**
