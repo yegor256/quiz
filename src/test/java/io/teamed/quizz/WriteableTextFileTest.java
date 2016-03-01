@@ -11,7 +11,7 @@ import java.nio.file.Path;
 
 import org.junit.Test;
 
-public class SaveableTextFileTest extends AbstractTextFileTest {
+public class WriteableTextFileTest extends AbstractTextFileTest {
   private static final String HELLO_WORLD = "Hello World!";
 
   @Test
