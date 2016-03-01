@@ -11,7 +11,7 @@ import java.nio.file.StandardOpenOption;
 
 final class WriteableTextFile extends AbstractTextFile implements WriteableText {
 
-  StandardOpenOption[] options;
+  private final StandardOpenOption[] options;
 
   protected WriteableTextFile(
       final Path path, 
