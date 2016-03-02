@@ -9,6 +9,11 @@ import java.lang.StringBuilder;
  */
 public class Parser {
   private File file;
+
+  public Parser(File f) {
+    file = f;
+  }
+
   public synchronized void setFile(File f) {
     file = f;
   }
