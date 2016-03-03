@@ -1,4 +1,4 @@
-package strategy;
+package refactor;
 
 import java.io.File;
 import java.io.FileInputStream;
