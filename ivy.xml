@@ -1,0 +1,8 @@
+<ivy-module version="1.0">
+	<info module="parser" organisation="quiz" revision="latest" />
+
+	<dependencies>
+		<dependency org="commons-lang" name="commons-lang" rev="latest.integration"/>
+		<dependency org="junit" name="junit" rev="latest.integration" />
+	</dependencies>
+</ivy-module>
