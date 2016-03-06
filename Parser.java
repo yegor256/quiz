@@ -65,15 +65,24 @@ public class Parser {
    * @throws IOException  Exception will be thrown if the file is not exists, or not readable
    */
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    BufferedReader bufferedReader = _getBufferedReader();
+
+    StringBuffer stringBuffer = new StringBuffer((int) file.length());
+
+    try {
+      int data;
+
+      while ((data = bufferedReader.read()) > 0) {
+        if (data < 0x80) {
+          stringBuffer.append((char) data);
+        }
       }
     }
-    return output;
+    finally {
+      bufferedReader.close();
+    }
+
+    return stringBuffer.toString();
   }
 
   /**
