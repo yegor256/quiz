@@ -1,7 +1,11 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 /**
  * This class is thread safe.
@@ -36,13 +40,22 @@ public class Parser {
    * @throws IOException  Exception will be thrown if the file is not exists, or not readable
    */
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    BufferedReader bufferedReader = _getBufferedReader();
+
+    StringBuffer stringBuffer = new StringBuffer((int) file.length());
+
+    try {
+      int data;
+
+      while ((data = bufferedReader.read()) > 0) {
+        stringBuffer.append((char) data);
+      }
     }
-    return output;
+    finally {
+      bufferedReader.close();
+    }
+
+    return stringBuffer.toString();
   }
 
   /**
@@ -74,6 +87,20 @@ public class Parser {
     for (int i = 0; i < content.length(); i += 1) {
       o.write(content.charAt(i));
     }
+  }
+
+  /**
+   * Returns with a <code>BufferedReader</code> to be able to read the content of the set file.
+   *
+   * @return  Returns with a <code>BufferedReader</code>
+   * @throws  FileNotFoundException  Exception will be thrown if the file is not exists
+   */
+  private BufferedReader _getBufferedReader() throws FileNotFoundException {
+    FileInputStream fis = new FileInputStream(file);
+
+    InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+
+    return new BufferedReader(isr);
   }
 
 }
