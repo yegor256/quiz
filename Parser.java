@@ -1,11 +1,16 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * This class is thread safe.
@@ -92,9 +97,23 @@ public class Parser {
    * @throws IOException  Exception will be thrown if the file is not writable
    */
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    FileOutputStream fos = new FileOutputStream(file);
+
+    OutputStreamWriter osw = new OutputStreamWriter(fos, Charset.forName("UTF-8"));
+
+    Writer writer = new BufferedWriter(osw);
+
+    try {
+      if (!file.exists()) {
+        Files.createFile(Paths.get(file.getPath()));
+      }
+
+      writer.write(content);
+
+      writer.flush();
+    }
+    finally {
+      writer.close();
     }
   }
 
