@@ -21,21 +21,3 @@ final class DatabaseDocument implements Document {
         return $this->database->query('SELECT title FROM document WHERE name = "' . $this->name . '" LIMIT 1')['title'];
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
