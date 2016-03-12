@@ -7,12 +7,22 @@ import java.io.IOException;
  */
 public class Parser {
   private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+  public synchronized void setFile(File file) {
+    this.file = file;
   }
   public synchronized File getFile() {
     return file;
   }
+  
+  public void saveContent(String content) throws IOException {
+	    FileOutputStream o = new FileOutputStream(file);
+	    int length = content.length();
+	    for (int i = 0; i < length; i += 1) {
+	      o.write(content.charAt(i));
+	    }
+	  }
+  
+  
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
@@ -22,6 +32,7 @@ public class Parser {
     }
     return output;
   }
+  
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
@@ -33,10 +44,5 @@ public class Parser {
     }
     return output;
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
-  }
+ 
 }
