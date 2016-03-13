@@ -1,42 +1,78 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    public static final int NON_UNICODE_MAX_VALUE = 0x7F;
+    private static final Logger LOGGER = Logger.getLogger(Parser.class.getSimpleName());
+
+    private File file;
+    private final Lock lock = new ReentrantLock();
+
+
+    public void setFile(File file) {
+        lock.lock();
+        this.file = file;
+        lock.unlock();
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public File getFile() {
+        return file;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public String getContent() throws IOException {
+        lock.lock();
+        try (InputStream is = new FileInputStream(file)) {
+            StringBuilder builder = new StringBuilder(is.available());
+            int data;
+            while ((data = is.read()) > 0) {
+                builder.append(data);
+            }
+            return builder.toString();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
+            throw e;
+        } finally {
+            lock.unlock();
+        }
     }
-  }
+
+    public String getContentWithoutUnicode() throws IOException {
+        lock.lock();
+        try (InputStream is = new FileInputStream(file)) {
+            StringBuilder builder = new StringBuilder(is.available());
+            int data;
+            while ((data = is.read()) > 0) {
+                if (data <= NON_UNICODE_MAX_VALUE) {
+                    builder.append(data);
+                }
+            }
+            return builder.toString();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
+            throw e;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void saveContent(String content) throws IOException {
+        lock.lock();
+        try (OutputStream os = new FileOutputStream(file)) {
+            for (int i = 0; i < content.length(); i++) {
+                os.write(content.charAt(i));
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
+            throw e;
+        } finally {
+            lock.unlock();
+        }
+    }
 }
