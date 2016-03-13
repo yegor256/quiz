@@ -1,14 +1,23 @@
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * This class is thread safe.
+ * @author omidp
+ *
  */
 public class Parser
 {
+
+    private final static Logger LOGGER = Logger.getLogger(Parser.class.getName());
+
     private final File file;
 
     public Parser(File file)
@@ -23,19 +32,41 @@ public class Parser
         return new Content(file).read();
     }
 
-    public String getContentWithoutUnicode() throws IOException
+    public String getContentWithoutUnicode()
     {
         return new ContentWithoutUnicode(file).read();
     }
 
-    public void saveContent(String content) throws IOException
-    {        
-        //FIXME: Do the same steps in other methods including close outputstream, handle exception,...
-        FileOutputStream o = new FileOutputStream(file);
-        for (int i = 0; i < content.length(); i += 1)
-        {
-            o.write(content.charAt(i));
-        }
+    public void saveContent(final String content)
+    {
+        new Writer() {
+            @Override
+            public void write()
+            {
+                if (content == null || content.trim().length() == 0)
+                    throw new IllegalArgumentException("content can not be empty");
+                FileOutputStream outputStream = null;
+                try
+                {
+                    outputStream = new FileOutputStream(file);
+                    outputStream.write(content.getBytes());
+                }
+                catch (IOException e)
+                {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
+                finally
+                {
+                    closeQuietly(outputStream);
+                }
+            }
+        }.write();
+
+    }
+
+    public interface Writer
+    {
+        void write();
     }
 
     public interface Reader
@@ -43,6 +74,12 @@ public class Parser
         String read();
     }
 
+    /**
+     * @author omidp
+     *         <p>
+     *         also read unicode
+     *         </p>
+     */
     public static class Content implements Reader
     {
 
@@ -57,20 +94,21 @@ public class Parser
         public String read()
         {
             String output = "";
-            FileInputStream i = null;
+            InputStream i = null;
             try
             {
                 i = new FileInputStream(f);
-                int data;
-                while ((data = i.read()) > 0)
+                BufferedReader in = new BufferedReader(new InputStreamReader(i, "UTF-8"));
+                String readLine;
+                while ((readLine = in.readLine()) != null)
                 {
-                    output += (char) data;
+                    output += readLine;
                 }
-                return output;
+                return new String(output.getBytes(), "UTF-8");
             }
             catch (IOException e)
             {
-                // TODO: use log here
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
             finally
             {
@@ -110,7 +148,7 @@ public class Parser
             }
             catch (IOException e)
             {
-                // TODO: use log here
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
             finally
             {
