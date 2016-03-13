@@ -2,41 +2,55 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-/**
- * This class is thread safe.
- */
+
+
 public class Parser {
   private File file;
-  public synchronized void setFile(File f) {
+  private static int UNICODE_IDENTIFIER = 0x80;
+
+  public final synchronized void setFile(File f) {
     file = f;
   }
-  public synchronized File getFile() {
+
+  public final synchronized File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+
+  public final String getContent() throws IOException {
+    synchronized (file) {
+      StringBuilder builder = new StringBuilder();
+      try (FileInputStream i = new FileInputStream(file)) {
+        int data;
+        while ((data = i.read()) > 0) {
+          builder.append((char) data);
+        }
       }
+      return builder.toString();
     }
-    return output;
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+  public final String getContentWithoutUnicode(File file) throws IOException {
+    synchronized (file) {
+      StringBuilder builder = new StringBuilder();
+      try (FileInputStream i = new FileInputStream(file)) {
+        int data;
+        while ((data = i.read()) > 0) {
+          if (data < UNICODE_IDENTIFIER) {
+            builder.append((char) data);
+          }
+        }
+      }
+      return builder.toString();
+    }
+  }
+
+  public final void saveContent(String content) throws IOException {
+    synchronized (file) {
+      try (FileOutputStream o = new FileOutputStream(file)) {
+        for (int i = 0; i < content.length(); i += 1) {
+          o.write(content.charAt(i));
+        }
+      }
     }
   }
 }
