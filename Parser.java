@@ -13,7 +13,7 @@ public class Parser {
   public synchronized File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
+  public synchronized String getContent() throws IOException {
     FileInputStream i = new FileInputStream(getFile());
     StringBuilder output = new StringBuilder();
     int data;
@@ -23,7 +23,7 @@ public class Parser {
     i.close();
     return output.toString();
   }
-  public String getContentWithoutUnicode() throws IOException {
+  public synchronized String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(getFile());
     StringBuilder output = new StringBuilder();
     int data;
@@ -35,7 +35,7 @@ public class Parser {
     i.close();
     return output.toString();
   }
-  public void saveContent(String content) throws IOException {
+  public synchronized void saveContent(String content) throws IOException {
     FileOutputStream o = new FileOutputStream(getFile());
     o.write(content.getBytes());
     o.flush();
