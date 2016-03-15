@@ -13,30 +13,33 @@ public class Parser {
   public synchronized File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
+  public synchronized String getContent() throws IOException {
+    try(
+    FileInputStream i = new FileInputStream(file)){
+    StringBuilder output = null;
     int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    byte[] buffer = new byte[1024];
+    while ((data = i.read(buffer)) != -1) {
+      output.append(new String(buffer, 0, data).toCharArray());
     }
-    return output;
+    return output.toString();
+    }
   }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
+  public synchronized String getContentWithoutUnicode() throws IOException {
+   try(
+    FileInputStream i = new FileInputStream(file)){
+    StringBuilder output = null;
     int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+    byte[] buffer = new byte[1024];
+    while ((data = i.read(buffer)) != -1) {
+      output.append(new String(buffer, 0, data).toCharArray());
     }
-    return output;
+    return output.toString();
+    }
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+  public synchronized void saveContent(String content) throws IOException {
+    try(FileOutputStream o = new FileOutputStream(file)){
+    o.write(content.getBytes());
     }
   }
 }
