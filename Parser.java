@@ -7,8 +7,8 @@ import java.io.IOException;
  */
 public class Parser {
   private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+  public Parser(File file) {
+    this.file = file;
   }
   public synchronized File getFile() {
     return file;
