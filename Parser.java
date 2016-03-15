@@ -1,42 +1,58 @@
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File mFile;
-  public synchronized void setFile(File f) {
-    mFile = f;
-  }
-  public synchronized File getFile() {
-    return mFile;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(mFile);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(mFile);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(mFile);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
-  }
+	private static final int FINAL_UNICODE_VALUE = 0x80;
+	private File mFile;
+
+	public synchronized void setFile(File f) {
+		mFile = f;
+	}
+
+	public synchronized File getFile() {
+		return mFile;
+	}
+
+	/* read() function returns -1 if there is no more data because the end of
+	 the file has been reached.*/
+	public synchronized String getContent() throws IOException {
+		FileInputStream fileInputStream = new FileInputStream(mFile);
+		StringBuilder stringBuilder = new StringBuilder();
+		int data;
+		while ((data = fileInputStream.read()) != -1) {
+			stringBuilder.append(String.valueOf(data));
+		}
+		fileInputStream.close();
+		return stringBuilder.toString();
+	}
+
+	// used a static field for filtering out unicode
+	public String getContentWithoutUnicode() throws IOException {
+		FileInputStream fileInputStream = new FileInputStream(mFile);
+		StringBuilder stringBuilder = new StringBuilder();
+		int data;
+		while ((data = fileInputStream.read()) != -1) {
+			if (data < FINAL_UNICODE_VALUE) {
+				stringBuilder.append(String.valueOf(data));
+			}
+		}
+		fileInputStream.close();
+		return stringBuilder.toString();
+	}
+
+	// Using try-with-resources statement closes any resources(file in this
+	// case) itself
+	// Use synchronized keyword to access the file in atomic way.
+	public synchronized void saveContent(String content)
+			throws FileNotFoundException {
+		try (PrintWriter printWriter = new PrintWriter(mFile)) {
+			printWriter.println(content);
+		}
+	}
 }
