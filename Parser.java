@@ -16,29 +16,29 @@ public class Parser {
   public synchronized String getContent() throws IOException {
     try(
     FileInputStream inputStream = new FileInputStream(file)){
-    StringBuilder output = new StringBuilder();
+    StringBuilder outputBuilder = new StringBuilder();
     int data;
     byte[] buffer = new byte[1024];
     while ((data = inputStream.read(buffer)) != -1) {
-      output.append(new String(buffer, 0, data).toCharArray());
+      outputBuilder.append(new String(buffer, 0, data).toCharArray());
     }
-    return output.toString();
+    return outputBuilder.toString();
     }
   }
   public synchronized String getContentWithoutUnicode() throws IOException {
    try(
     FileInputStream inputStream = new FileInputStream(file)){
-    StringBuilder output = StringBuilder();
+    StringBuilder outputBuilder = StringBuilder();
     int data;
     byte[] buffer = new byte[1024];
     while ((data = inputStream.read(buffer)) != -1) {
-      output.append(new String(buffer, 0, data).toCharArray());
+      outputBuilder.append(new String(buffer, 0, data).toCharArray());
     }
     return output.toString();
     }
   }
   public synchronized void saveContent(String content) throws IOException {
-    try(FileOutputStream o = new FileOutputStream(file)){
+    try(FileOutputStream outputStream = new FileOutputStream(file)){
     o.write(content.getBytes());
     }
   }
