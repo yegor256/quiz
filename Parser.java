@@ -39,7 +39,7 @@ public class Parser {
   }
   public synchronized void saveContent(String content) throws IOException {
     try(FileOutputStream outputStream = new FileOutputStream(file)){
-    o.write(content.getBytes());
+    outputStream.write(content.getBytes());
     }
   }
 }
