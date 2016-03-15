@@ -17,7 +17,7 @@ public class Parser {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
-    while ((data = i.read()) > 0) {
+    while ((data = i.read()) != -1) {
       output += (char) data;
     }
     return output;
@@ -26,7 +26,7 @@ public class Parser {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
-    while ((data = i.read()) > 0) {
+    while ((data = i.read()) != -1) {
       if (data < 0x80) {
         output += (char) data;
       }
