@@ -15,11 +15,11 @@ public class Parser {
   }
   public synchronized String getContent() throws IOException {
     try(
-    FileInputStream i = new FileInputStream(file)){
-    StringBuilder output = null;
+    FileInputStream inputStream = new FileInputStream(file)){
+    StringBuilder output = new StringBuilder();
     int data;
     byte[] buffer = new byte[1024];
-    while ((data = i.read(buffer)) != -1) {
+    while ((data = inputStream.read(buffer)) != -1) {
       output.append(new String(buffer, 0, data).toCharArray());
     }
     return output.toString();
@@ -27,11 +27,11 @@ public class Parser {
   }
   public synchronized String getContentWithoutUnicode() throws IOException {
    try(
-    FileInputStream i = new FileInputStream(file)){
-    StringBuilder output = null;
+    FileInputStream inputStream = new FileInputStream(file)){
+    StringBuilder output = StringBuilder();
     int data;
     byte[] buffer = new byte[1024];
-    while ((data = i.read(buffer)) != -1) {
+    while ((data = inputStream.read(buffer)) != -1) {
       output.append(new String(buffer, 0, data).toCharArray());
     }
     return output.toString();
