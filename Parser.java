@@ -62,11 +62,14 @@ public class Parser {
     public void saveContent(String content) throws IOException {
         lock.writeLock().lock();
         try (FileOutputStream o = new FileOutputStream(file)) {
-            for (int i = 0; i < content.length(); i += 1) {
-                o.write(content.getBytes());
-            }
-        } finally {
-            lock.writeLock().unlock();
+          o.write(content.getBytes());
         }
     }
+
+    finally
+
+    {
+        lock.writeLock().unlock();
+    }
+}
 }
