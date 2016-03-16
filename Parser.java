@@ -30,38 +30,10 @@ public class Parser {
     }
 
     public String getContent() throws IOException {
-        @Cleanup FileInputStream i = new FileInputStream(file);
-        StringBuilder output = "";
-        int data;
-        while ((data = i.read()) > 0) {
-            output.append(()char)data);
-        }
-        return output;
-    }
-
-    public String getContent() throws IOException {
-        lock.readLock().lock();
-        try (
-                FileInputStream inputStream = new FileInputStream(file)) {
-            StringBuilder outputBuilder = new StringBuilder();
-            int data;
-            byte[] buffer = new byte[1024];
-            while ((data = inputStream.read(buffer)) != -1) {
-                outputBuilder.append(new String(buffer, 0, data).toCharArray());
-            }
-            return outputBuilder.toString();
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    public String getContentWithoutUnicode() throws IOException {
         lock.readLock().lock();
         try (
                 FileInputStream inputStream = new FileInputStream(file)) {
             StringBuilder stringBuffer = StringBuilder();
-            int data;
-            byte[] buffer = new byte[1024];
             Scanner sc = new Scanner(stringBuffer);
             while (sc.hasNextLine()) {
                 stringBuffer.append(sc.nextLine());
@@ -73,7 +45,6 @@ public class Parser {
     }
 
     public String getContentWithoutUnicode() throws IOException {
-
         lock.readLock().lock();
         try (
                 FileInputStream inputStream = new FileInputStream(file)) {
