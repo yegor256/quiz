@@ -6,8 +6,8 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
+  private final File file;
+  public Parser(File f) {
     file = f;
   }
   public synchronized File getFile() {
