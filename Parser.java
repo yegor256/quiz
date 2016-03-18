@@ -11,9 +11,12 @@ import java.io.*;
  */
 public class Parser {
 
-    private File file;
-    
-    private Parser() {}
+    private final File file;    
+	
+    @SuppressWarnings("unused")
+	private Parser() {
+    	this(null);
+    }
 
     /**
      * Better to set file instance into the constructor which will do basic file validation.
