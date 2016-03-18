@@ -3,6 +3,8 @@ import java.io.*;
 /**
  * # Javadoc comments could be better, unit tests with multithreading file access should be added.
  * # Validate constructor file argument
+ * # Forbid default constructor
+ * 
  * @author Kresimir Popovic
  * @version 1.0.0
  * @since March 17, 2016
@@ -10,6 +12,8 @@ import java.io.*;
 public class Parser {
 
     private File file;
+    
+    private Parser() {}
 
     /**
      * Better to set file instance into the constructor which will do basic file validation.
