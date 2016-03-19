@@ -22,27 +22,29 @@ public class Parser {
 	/* read() function returns -1 if there is no more data because the end of
 	 the file has been reached.*/
 	public synchronized String getContent() throws IOException {
-		FileInputStream fileInputStream = new FileInputStream(mFile);
-		StringBuilder stringBuilder = new StringBuilder();
-		int data;
-		while ((data = fileInputStream.read()) != -1) {
-			stringBuilder.append(String.valueOf(data));
+            StringBuilder stringBuilder;
+            try (FileInputStream fileInputStream = new FileInputStream(mFile)) {
+                stringBuilder = new StringBuilder();
+                int data;
+                while ((data = fileInputStream.read()) != -1) {
+                    stringBuilder.append(String.valueOf(data));
 		}
-		fileInputStream.close();
+            }
 		return stringBuilder.toString();
 	}
 
 	// used a static field for filtering out unicode
-	public String getContentWithoutUnicode() throws IOException {
-		FileInputStream fileInputStream = new FileInputStream(mFile);
-		StringBuilder stringBuilder = new StringBuilder();
-		int data;
-		while ((data = fileInputStream.read()) != -1) {
-			if (data < FINAL_UNICODE_VALUE) {
-				stringBuilder.append(String.valueOf(data));
+	public synchronized String getContentWithoutUnicode() throws IOException {
+            StringBuilder stringBuilder;
+            try (FileInputStream fileInputStream = new FileInputStream(mFile)) {
+                stringBuilder = new StringBuilder();
+                int data;
+                while ((data = fileInputStream.read()) != -1) {
+                    if (data < FINAL_UNICODE_VALUE) {
+                        stringBuilder.append(String.valueOf(data));
 			}
 		}
-		fileInputStream.close();
+            }
 		return stringBuilder.toString();
 	}
 
@@ -56,3 +58,4 @@ public class Parser {
 		}
 	}
 }
+
