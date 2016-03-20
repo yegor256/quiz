@@ -13,6 +13,10 @@ public class Parser {
     this.file = file;
   }
 
+  public String getFile() {
+    return file;
+  }
+
   public String getContent() {
     return getContentFiltered((data) -> true);
   }
