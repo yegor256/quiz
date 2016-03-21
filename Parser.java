@@ -1,42 +1,98 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * This class is thread safe.
  */
-public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+public class Parser<T extends Serializable> {
+    public static final int UNICODE_THRESHOLD = 0x80;
+
+    private String fileName;
+    private ReentrantReadWriteLock fileLocker;
+
+    public Parser(String fileName) {
+        super();
+
+        if (fileName == null) {
+            throw new IllegalArgumentException("fileName cannot be null");
+        }
+
+        this.fileName = fileName;
+        this.fileLocker = new ReentrantReadWriteLock();
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public String getFileName() {
+        return this.fileName;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public T parse() {
+        FileInputStream input = null;
+        StringBuilder output = new StringBuilder();
+        Lock readLock = this.fileLocker.readLock();
+
+        try {
+            readLock.lock();
+            input = new FileInputStream(this.fileName);
+            byte[] data = new byte[1024];
+            int read = input.read(data);
+
+            while (read > 0) {
+                output.append(new String(data, 0, read));
+                read = input.read(data);
+            }
+        } catch (IOException ioe) {
+            System.out.println("File read error");
+            return null;
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {/* do nothing */}
+            }
+            readLock.unlock();
+        }
+
+        return (T)output.toString(); // dummy
     }
-  }
+
+    public String getContentWithoutUnicode() {
+        String content = (String)this.parse();
+
+        if (content == null) {
+            return null;
+        }
+
+        StringBuilder resultBuilder = new StringBuilder();
+        for (char c : content.toCharArray()) {
+            if (c < UNICODE_THRESHOLD) {
+                resultBuilder.append(c);
+            }
+        }
+
+        return resultBuilder.toString();
+    }
+
+    public boolean persist(T object) {
+        String content = (String) object;
+        Lock writeLock = this.fileLocker.writeLock();
+        FileWriter fw = null;
+
+        try {
+            writeLock.lock();
+            fw = new FileWriter(fileName);
+            fw.write(content);
+            fw.flush();
+        } catch (IOException ioe) {
+            System.out.println("Error wrting to the file");
+            return false;
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException e) {/* Do nothing */}
+            writeLock.unlock();
+        }
+
+        return true;
+    }
 }
