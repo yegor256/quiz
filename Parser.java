@@ -5,7 +5,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * This class is thread safe.
  */
-public class Parser {
+public class Parser<T extends Serializable> {
     public static final int UNICODE_THRESHOLD = 0x80;
 
     private String fileName;
@@ -26,7 +26,7 @@ public class Parser {
         return this.fileName;
     }
 
-    public String getContent() {
+    public T parse() {
         FileInputStream input = null;
         StringBuilder output = new StringBuilder();
         Lock readLock = this.fileLocker.readLock();
@@ -53,11 +53,11 @@ public class Parser {
             readLock.unlock();
         }
 
-        return output.toString();
+        return (T)output.toString(); // dummy
     }
 
     public String getContentWithoutUnicode() {
-        String content = this.getContent();
+        String content = (String)this.parse();
 
         if (content == null) {
             return null;
@@ -73,7 +73,8 @@ public class Parser {
         return resultBuilder.toString();
     }
 
-    public boolean saveContent(String content) {
+    public boolean persist(T object) {
+        String content = (String) object;
         Lock writeLock = this.fileLocker.writeLock();
         FileWriter fw = null;
 
