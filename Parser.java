@@ -1,12 +1,18 @@
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 /**
  * This class is thread safe.
  */
 public class Parser {
   private File file;
+  private static final String NON_ASCII = "[^\\x00-\\x7F]";
+  private static final Charset charset = StandardCharsets.UTF_8;
   public synchronized void setFile(File f) {
     file = f;
   }
@@ -14,29 +20,17 @@ public class Parser {
     return file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+    Path path = file.toPath();
+    byte[] encoded = Files.readAllBytes(path);
+    return new String(encoded, charset);
   }
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
+    String content = this.getContent();
+    return content.replaceAll(NON_ASCII, "");
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
+    BufferedWriter bw = Files.newBufferedWriter(file.toPath(), charset, StandardOpenOption.TRUNCATE_EXISTING);
+    bw.write(content);
+    bw.flush();
   }
 }
