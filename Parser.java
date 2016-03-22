@@ -6,11 +6,28 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
+
+private Parser instance;
+
+private File file;
+
+    private Parser() {
+        //lots of initialization code
+    }
+
+    public static synchronized Parser getInstance() {
+        if(instance == null) {
+            instance = new Parser();
+        }
+        return instance;
+    }
+
+
+  
+  public void setFile(File f) {
     file = f;
   }
-  public synchronized File getFile() {
+  public File getFile() {
     return file;
   }
   public String getContent() throws IOException {
