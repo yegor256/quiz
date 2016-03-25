@@ -1,66 +1,112 @@
 package main;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
 
-private static Parser instance;
+  private File file;
 
-private File file;
+  private FileInputStream fileInputStream;
+  private BufferedInputStream bis;
+  private String output;
+  private BufferedReader br;
+  private StringBuilder strBuilder;
+  private BufferedOutputStream writer;
+  private String readLine;
+  private static final int BUFFER_SIZE = 1024;
 
-private FileInputStream fileInputStream;
-private FileOutputStream fileOutPutStream;
-private String output = "";
-private int data;
+  public Parser() {
+  }
 
-    private Parser() {}
-
-    public static synchronized Parser getInstance(File f) {
-        if(instance == null) {
-            instance = new Parser();
-            instance.setFile(f);
-        }
-        return instance;
-    }
-
-  private void setFile(File f) {
-    if(this.file == null){
+  public synchronized void setFile(File f) {
+    if (this.file == null) {
       this.file = f;
     }
-    
+
   }
-  public File getFile() {
+
+  public synchronized File getFile() {
     return this.file;
   }
-  public String getContent() throws IOException {
-    this.fileInputStream = new FileInputStream(this.file);
-    while ((this.data = this.fileInputStream.read()) > 0) {
-      this.output += (char) this.data;
+
+  public synchronized String getFileContent() throws IOException {
+    try {
+      this.fileInputStream = new FileInputStream(this.file);
+      this.bis = new BufferedInputStream(fileInputStream);
+
+      this.strBuilder = new StringBuilder();
+      InputStreamReader isr = new InputStreamReader(this.bis);
+
+      this.br = new BufferedReader(isr, Parser.BUFFER_SIZE);
+      if (br.ready()) {
+        while ((readLine = br.readLine()) != null) {
+          this.strBuilder.append(readLine + "\n");
+        }
+      }
+
+    } catch (IOException ex) {
+      throw ex;
+    } finally {
+      if (this.bis != null) {
+        this.bis.close();
+      }
+      if (this.fileInputStream != null) {
+        this.fileInputStream.close();
+      }
+      if (this.br != null) {
+        this.br.close();
+      }
+
     }
-    this.fileInputStream.close();
+    this.output = this.strBuilder.toString();
+
     return this.output;
   }
-  public String getContentWithoutUnicode() throws IOException {
-    this.fileInputStream = new FileInputStream(this.file);
-    while ((this.data = this.fileInputStream.read()) > 0) {
-      if (this.data < 0x80) {
-        this.output += (char) this.data;
+
+  public synchronized String getContent() throws IOException {
+    try {
+
+      this.output = new String(getFileContent().getBytes(), "UTF8");
+
+    } catch (IOException ex) {
+      throw ex;
+    }
+    return this.output;
+  }
+
+  public synchronized String getContentWithoutUnicode() throws IOException {
+    try {
+      this.output = getFileContent();
+    } catch (IOException ex) {
+      throw ex;
+    }
+    return this.output;
+  }
+
+  public void saveContent(String content) throws IOException {
+    try {
+      this.writer = new BufferedOutputStream(new FileOutputStream(
+          this.file));
+      this.writer.write(content.getBytes(Charset.forName("UTF-8")));
+    } catch (Exception e) {
+    } finally {
+      if (this.writer != null) {
+        this.writer.close();
       }
     }
-    this.fileInputStream.close();
-    return this.output;
   }
-  public void saveContent(String content) throws IOException {
-    this.fileOutPutStream = new FileOutputStream(this.file);
-    for (int i = 0; i < content.length(); i += 1) {
-      this.fileOutPutStream.write(content.charAt(i));
-    }
-    this.fileOutPutStream.close();
-  }
-}
 
+}
