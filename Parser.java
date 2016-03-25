@@ -1,3 +1,5 @@
+package main;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,53 +9,58 @@ import java.io.IOException;
  */
 public class Parser {
 
-private Parser instance;
+private static Parser instance;
 
 private File file;
 
-    private Parser() {
-        //lots of initialization code
-    }
+private FileInputStream fileInputStream;
+private FileOutputStream fileOutPutStream;
+private String output = "";
+private int data;
 
-    public static synchronized Parser getInstance() {
+    private Parser() {}
+
+    public static synchronized Parser getInstance(File f) {
         if(instance == null) {
             instance = new Parser();
+            instance.setFile(f);
         }
         return instance;
     }
 
-
-  
-  public void setFile(File f) {
-    file = f;
+  private void setFile(File f) {
+    if(this.file == null){
+      this.file = f;
+    }
+    
   }
   public File getFile() {
-    return file;
+    return this.file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    this.fileInputStream = new FileInputStream(this.file);
+    while ((this.data = this.fileInputStream.read()) > 0) {
+      this.output += (char) this.data;
     }
-    return output;
+    this.fileInputStream.close();
+    return this.output;
   }
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    this.fileInputStream = new FileInputStream(this.file);
+    while ((this.data = this.fileInputStream.read()) > 0) {
+      if (this.data < 0x80) {
+        this.output += (char) this.data;
       }
     }
-    return output;
+    this.fileInputStream.close();
+    return this.output;
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
+    this.fileOutPutStream = new FileOutputStream(this.file);
     for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+      this.fileOutPutStream.write(content.charAt(i));
     }
+    this.fileOutPutStream.close();
   }
 }
+
