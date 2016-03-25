@@ -96,7 +96,7 @@ public class Parser {
     return this.output;
   }
 
-  public void saveContent(String content) throws IOException {
+  public synchronized void saveContent(String content) throws IOException {
     try {
       this.writer = new BufferedOutputStream(new FileOutputStream(
           this.file));
