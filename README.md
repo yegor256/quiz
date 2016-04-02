@@ -1,18 +1,6 @@
-[![Made By Teamed.io](http://img.teamed.io/btn.svg)](http://www.teamed.io)
 
-Imagine you're assigned as a developer to this project and you
-have to make the first step in refactoring of one of these classes
-(choose one, by the language you're most comfortable in).
-There are many issues in these classes, even though they compile and work.
+I started by wrapping some unit tests on the code as it was.
 
-Please, submit a pull request with the changes you would recommend to
-do here. Try to spend **15 minutes** maximum for the entire work. If you
-need more time, you're doing something wrong. Remember, you have to
-do just the first step in refactoring. Don't fix everything.
+Then I refactored into a shared method with a parameter for retrieving content.
 
-Also, if you think that something else must be refactored further,
-put your ideas into the description of the pull request.
-
-[Apply here](http://www.teamed.io/join.html).
-
-Thanks!
+I would continue by refactoring into try with resources to ensure closes, and likely using IOUtils instead.
