@@ -7,40 +7,37 @@ import java.io.IOException;
  */
 public class Parser {
 	
-	private File file;
-
-	public synchronized void setFile(File f) {
-		file = f;
+	public String getContent(File file) throws IOException {
+		return getContent(file, true);
 	}
 
-	public synchronized File getFile() {
-		return file;
+	public String getContentWithoutUnicode(File file) throws IOException {
+		return getContent(file, false);
 	}
 
-	public String getContent() throws IOException {
-		return getContent(true);
-	}
-
-	public String getContentWithoutUnicode() throws IOException {
-		return getContent(false);
-	}
-
-	public String getContent(boolean includeUnicode) throws IOException {
-		FileInputStream i = new FileInputStream(file);
+	public String getContent(File file, boolean includeUnicode) throws IOException {
 		String output = "";
-		int data;
-		while ((data = i.read()) > 0) {
-			if(includeUnicode || data < 0x80) {
-				output += (char) data;
-			}
+		try(
+			FileInputStream i = new FileInputStream(file);
+		){
+			int data;
+			while ((data = i.read()) > 0) {
+				if(includeUnicode || data < 0xFF) {
+					output += (char) data;
+				}
+			}			
 		}
 		return output;
 	}
 	
-	public void saveContent(String content) throws IOException {
-		FileOutputStream o = new FileOutputStream(file);
-		for (int i = 0; i < content.length(); i += 1) {
-			o.write(content.charAt(i));
+	public void saveContent(File file, String content) throws IOException {
+		try(
+			FileOutputStream o = new FileOutputStream(file);
+		){
+			for (int i = 0; content != null &&  i < content.length(); i += 1) {
+				o.write(content.charAt(i));
+			}
 		}
 	}
+	
 }
