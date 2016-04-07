@@ -11,12 +11,33 @@ interface Parser<T> {
 }
 
 /**
+ * Abstract parser decorator
+ */
+abstract class ParserDecorator<T> implements Parser<T> {
+    final private Parser<T> decoratedParser;
+
+    public ParserDecorator(Parser<T> p) {
+        this.decoratedParser = p;
+    }
+
+    @Override
+    public T getContent() throws IOException {
+        return this.decoratedParser.getContent();
+    }
+
+    @Override
+    public void setContent(T content) throws IOException {
+        this.decoratedParser.setContent(content);
+    }
+}
+
+/**
  * Parser that reads/writes text (using default format - UTF-8) from/to a File.
  * This class is thread safe.
  */
 class TextFileParser implements Parser<String> {
 
-    private File file;
+    final private File file;
 
     public TextFileParser(File f) {
         this.file = f;
@@ -27,43 +48,51 @@ class TextFileParser implements Parser<String> {
     }
 
     synchronized public String getContent() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(this.getFile()));
-        StringBuilder builder = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
+        BufferedReader reader = null;
+        try {
+            StringBuilder builder = new StringBuilder();
+            reader = new BufferedReader(new FileReader(this.getFile()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            return builder.toString();
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
         }
-        reader.close();
-        return builder.toString();
     }
 
     synchronized public void setContent(String content) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(this.getFile()));
-        writer.write(content);
-        writer.close();
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(this.getFile()));
+            writer.write(content);
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
     }
 }
 
 /**
- * Parser that reads/writes ascii text from/to a File.
- * This class is thread safe.
+ * Parser decorator that guarantees that content only contains ascii text.
  */
-class AsciiFileParser extends TextFileParser {
+class AsciiParser extends ParserDecorator<String> {
 
-    public AsciiFileParser(File f) {
-        super(f);
+    public AsciiParser(Parser<String> p) {
+        super(p);
     }
 
-    synchronized public String getContent() throws IOException {
+    @Override
+    public String getContent() throws IOException {
         return filterUnicode(super.getContent());
     }
 
-    /**
-     * @implNote I know that this behaviour was not on the original implementation,
-     * but, since I wrote that this class reads/writes ascii text, lets make sure that we only write
-     * ascii text to the File.
-     */
-    synchronized public void setContent(String content) throws IOException {
+    @Override
+    public void setContent(String content) throws IOException {
         super.setContent(filterUnicode(content));
     }
 
@@ -77,5 +106,4 @@ class AsciiFileParser extends TextFileParser {
         }
         return builder.toString();
     }
-
 }
