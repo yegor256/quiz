@@ -1,42 +1,49 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+
 /**
  * This class is thread safe.
  */
-public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+public class FileUtility {
+
+  private final File file;
+
+  public FileUtility(final File file) {
+    if (file == null)
+      throw new IllegalArgumentException("File can't be null");
+
+    if (!file.exists())
+      throw new IllegalArgumentException("File does not not exists");
+
+    if (file.isDirectory())
+      throw new IllegalArgumentException("It can't be a directory");
+
+    this.file = file;
   }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
+
+  public synchronized String getContent(boolean isUnicode) throws IOException {
+    BufferedReader br = new BufferedReader(new FileReader(file));
     int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    StringBuilder sb = new StringBuilder();
+    while ((data = br.read()) > 0) {
+      if (isUnicode) {
+        if(data < 0x80)
+          sb.append((char) data);
+        continue;
       }
+      sb.append((char) data);
     }
-    return output;
+    br.close();
+    return sb.toString();
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
-    }
+
+  public synchronized void saveContent(String content) throws IOException {
+    BufferedWriter writer = new BufferedWriter(new FileWriter(file)); 
+    writer.write(content);
+    writer.close();
   }
 }
