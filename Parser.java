@@ -9,16 +9,16 @@ import java.io.IOException;
 public class Parser {
     private File file;
 
-    public synchronized void setFile(File f) {
-        file = f;
+    public synchronized void setFile(File file) {
+        this.file = file;
     }
 
     public synchronized File getFile() {
-        return file;
+        return this.file;
     }
 
     public String getContent() throws IOException {
-        FileInputStream inputStream = new FileInputStream(file);
+        FileInputStream inputStream = new FileInputStream(this.file);
         String output = "";
         int data;
         while ((data = inputStream.read()) > 0) {
@@ -28,7 +28,7 @@ public class Parser {
     }
 
     public String getContentWithoutUnicode() throws IOException {
-        FileInputStream inputStream = new FileInputStream(file);
+        FileInputStream inputStream = new FileInputStream(this.file);
         String output = "";
         int data;
         while ((data = inputStream.read()) > 0) {
@@ -40,7 +40,7 @@ public class Parser {
     }
 
     public void saveContent(String content) throws IOException {
-        FileOutputStream outputStream = new FileOutputStream(file);
+        FileOutputStream outputStream = new FileOutputStream(this.file);
         for (int i = 0; i < content.length(); i += 1) {
             outputStream.write(content.charAt(i));
         }
