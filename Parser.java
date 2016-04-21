@@ -4,14 +4,15 @@ import java.nio.file.Files;
 /**
  * This class is thread safe.
  */
-public class Parser {
-    private File file;
+public final class Parser {
 
-    public synchronized void setFile(File f) {
-        file = f;
+    private final File file;
+
+    public Parser(File file) {
+        this.file = file;
     }
 
-    public synchronized File getFile() {
+    public File getFile() {
         return file;
     }
 
