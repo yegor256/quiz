@@ -1,9 +1,6 @@
 import java.io.*;
 import java.nio.file.Files;
 
-/**
- * This class is thread safe.
- */
 public final class Parser {
 
     private final File file;
