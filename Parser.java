@@ -29,16 +29,7 @@ public class Parser {
     }
 
     public String getContentWithoutUnicode() throws IOException {
-        try (FileInputStream i = new FileInputStream(file)) {
-            String output = "";
-            int data;
-            while ((data = i.read()) > 0) {
-                if (data < 0x80) {
-                    output += (char) data;
-                }
-            }
-            return output;
-        }
+        return getContent().replaceAll("[^\\x00-\\x7F]", "");
     }
 
     public void saveContent(String content) throws IOException {
