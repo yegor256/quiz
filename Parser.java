@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.file.Files;
 
 /**
  * This class is thread safe.
@@ -15,14 +16,7 @@ public class Parser {
     }
 
     public String getContent() throws IOException {
-        try (FileInputStream i = new FileInputStream(file)) {
-            String output = "";
-            int data;
-            while ((data = i.read()) > 0) {
-                output += (char) data;
-            }
-            return output;
-        }
+        return new String(Files.readAllBytes(file.toPath()));
     }
 
     public String getContentWithoutUnicode() throws IOException {
