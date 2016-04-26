@@ -7,23 +7,24 @@ class Document {
      *
      * @var User
      */
-    public $user;
+    private $user;
 
     /**
      * Name of Document.
      *
      * @var string
      */
-    public $name;
+    private $name;
 
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(array $row)
     {
-        $this->db = Database::getInstance();
+        $this->title = $row[3];
+        $this->content = $row[6];
     }
 
     /**
@@ -36,11 +37,8 @@ class Document {
      */
     public function init($name, User $user)
     {
-        if (!strlen($name) > 5)) {
-            throw new Exception("Name is too short.");
-        };
-        $this->user = $user;
-        $this->name = $name;
+        $this->setName($name);
+        $this->setUser($user);
     }
 
     /**
@@ -50,8 +48,48 @@ class Document {
      */
     public function getTitle(): string
     {
-        $row = $this->db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        return $this->title;
+    }
+
+    /**
+     * Sets new Title for current Document.
+     *
+     * @param string $title
+     *
+     * @throws Exception Throws an Exception when name is too short.
+     *
+     * @return $this
+     */
+    public function setTitle(string $title): Document
+    {
+      if (!strlen($name) > 5) {
+          throw new Exception("Name is too short.");
+      }
+      $this->title = $title;
+      return $this;
+    }
+
+    /**
+     * User of the current Document.
+     *
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Sets User for current Document.
+     *
+     * @param User $user
+     *
+     * @return $this
+     */
+    public function setUser(User $user): Document
+    {
+      $this->user = $user;
+      return $this;
     }
 
     /**
@@ -61,13 +99,42 @@ class Document {
      */
     public function getContent(): string
     {
-        $row = $this->db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        return $this->content;
+    }
+
+    /**
+     * Sets Content for current Document.
+     *
+     * @param string $content
+     *
+     * @return $this
+     */
+    public function setContent(string $content): Document
+    {
+      $this->content = $content;
+      return $this;
+    }
+
+    /**
+     * Fetches a Document by its name.
+     *
+     * @param  string $name
+     *
+     * @return Document
+     */
+    public static function fetchByName(string $name): Document
+    {
+      $db = Database::getInstance();
+      $query = 'SELECT * FROM document WHERE name = `%s` LIMIT 1';
+      $query = sprintf($query, $db->escape($name));
+      $row = $db->query($query);
+
+      return new self($row);
     }
 
     /**
      * Returns all Documents.
-     * 
+     *
      * @return Document[]
      */
     public static function getAllDocuments(): array

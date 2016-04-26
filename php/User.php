@@ -1,6 +1,7 @@
 <?php
 
-class User {
+class User
+{
 
     /**
      * Creates a new Document with a given name.
@@ -9,7 +10,8 @@ class User {
      *
      * @return Document
      */
-    public function makeNewDocument($name): Document {
+    public function makeNewDocument($name): Document
+    {
         $doc = new Document();
         $doc->init($name, $this);
         return $doc;
@@ -20,9 +22,10 @@ class User {
      *
      * @return Document[]
      */
-    public function getMyDocuments(): array {
+    public function getMyDocuments(): array
+    {
         array_filter(Document::getAllDocuments(), function($document) {
-            return ($doc->user === $this);
+            return ($document->getUser() === $this);
         });
     }
 }
