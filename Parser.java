@@ -23,7 +23,7 @@ public class Parser {
     }
 
     /**
-     * I changed this method to use read-write lock, buffered reader (faster than byte by byte) and StringBuilder.
+     * Changed this method to use read-write lock, buffered reader (faster than byte by byte) and StringBuilder.
      *
      * @return
      * @throws IOException
@@ -69,7 +69,7 @@ public class Parser {
     }
 
     /**
-     * Changed to user read-write lock and write the bytes of the string without iteration
+     * Changed to use read-write lock and write the bytes of the string without iteration
      *
      * @param content
      * @throws IOException
