@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -11,41 +12,61 @@ public class Parser {
         this.file = new File(filePath);
     }
 
-    public synchronized String getContent(boolean withUnicode) throws IOException {
-        FileInputStream i = new FileInputStream(file);
+    public synchronized String getContent(Filter filter) {
         StringBuilder output = new StringBuilder();
-        try {
+        try (FileInputStream fis = new FileInputStream(file)) {
             int data;
-            while ((data = i.read()) != -1) {
-                if (withUnicode) {
+            while ((data = fis.read()) != -1) {
+                if (filter.apply(data)) {
                     output.append((char) data);
-                } else {
-                    if (data < 0x80) {
-                        output.append((char) data);
-                    }
                 }
             }
-            return output.toString();
-        } finally {
-            i.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("File not found " +  file.getAbsolutePath(), e);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read content from " + file.getAbsolutePath(), e);
         }
+        return output.toString();
     }
 
-    public synchronized void saveContent(String content) throws IOException {
+    public synchronized void saveContent(String content) {
         if (content == null || content.length() == 0) {
-            throw new RuntimeException("Invalid content");
+            throw new IllegalArgumentException("Invalid content");
         }
 
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-
-        FileOutputStream fos = new FileOutputStream(file);
-        try {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
             fos.write(content.getBytes());
             fos.flush();
-        } finally {
-            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to write content to" + file.getAbsolutePath(), e);
         }
     }
+
+    public File getFile() {
+        return file;
+    }
+
+    public interface Filter {
+        boolean apply(int data);
+    }
+
+    public class WithoutUnicodeFilter implements Filter {
+
+        @Override
+        public boolean apply(int data) {
+            return data < 0x80;
+        }
+    }
+
+    public class NoFilter implements Filter {
+
+        @Override
+        public boolean apply(int data) {
+            return true;
+        }
+    }
+
 }
