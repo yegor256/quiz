@@ -4,20 +4,20 @@ import java.io.IOException;
 
 public class NoUnicodeTextFile implements TextFile {
 
-    private final TextFile textFile;
+    private final TextFile origin;
 
     public NoUnicodeTextFile(TextFile textFile) {
-        this.textFile = textFile;
+        this.origin = textFile;
     }
 
     @Override
     public String read() throws IOException {
-        String content = textFile.read();
+        String content = origin.read();
         return content.replaceAll("[^\\p{ASCII}]", "");
     }
 
     @Override
     public void write(String content) throws IOException {
-        textFile.write(content);
+        origin.write(content);
     }
 }
