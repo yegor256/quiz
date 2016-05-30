@@ -1,5 +1,3 @@
-package com.bibro.parser;
-
 import java.io.IOException;
 
 public class NoUnicodeTextFile implements TextFile {
