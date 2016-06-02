@@ -10,8 +10,7 @@ public class NoUnicodeTextFile implements TextFile {
 
     @Override
     public String read() throws IOException {
-        String content = origin.read();
-        return content.replaceAll("[^\\p{ASCII}]", "");
+        return origin.read().replaceAll("[^\\p{ASCII}]", "");
     }
 
     @Override
