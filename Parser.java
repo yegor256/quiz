@@ -9,6 +9,10 @@ import java.io.IOException;
 public class Parser {
     private File file;
 
+    public Parser() {
+        this.file = null;
+    }
+
     public synchronized void setFile(File file) {
         this.file = file;
     }
