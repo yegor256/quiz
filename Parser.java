@@ -18,31 +18,36 @@ public class Parser {
     }
 
     public String getContent() throws IOException {
-        FileInputStream input = new FileInputStream(file);
-        String content = "";
-        int data;
-        while ((data = input.read()) > 0) {
-            content += (char) data;
-        }
-        return content;
+        return this.getContentHelper(true);
     }
 
     public String getContentWithoutUnicode() throws IOException {
-        FileInputStream input = new FileInputStream(file);
-        String content = "";
-        int data;
-        while ((data = input.read()) > 0) {
-            if (data < 0x80) {
-                content += (char) data;
-            }
-        }
-        return content;
+        return this.getContentHelper(false);
     }
 
     public void saveContent(String content) throws IOException {
         FileOutputStream output = new FileOutputStream(file);
         for (int i = 0; i < content.length(); i += 1) {
             output.write(content.charAt(i));
+        }
+    }
+
+    private String getContentHelper(boolean withUnicode) {
+        FileInputStream input = new FileInputStream(file);
+        String content = "";
+        int data;
+
+        if (withUnicode == false) {
+            while ((data = input.read()) > 0) {
+                if (data < 0x80) {
+                    content += (char) data;
+                }
+            }
+        }
+        else {
+            while ((data = input.read()) > 0) {
+                content += (char) data;
+            }
         }
     }
 }
