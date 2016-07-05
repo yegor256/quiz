@@ -1,6 +1,6 @@
 package quiz;
 
-import com.sun.istack.internal.Nullable;
+import com.sun.istack.internal.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,9 +12,9 @@ import java.io.IOException;
  */
 public class Parser {
 
-    private File file;
+    private @NotNull File file;
 
-    public synchronized @Nullable File getFile() {
+    public synchronized @NotNull File getFile() {
         return file;
     }
 
@@ -22,15 +22,15 @@ public class Parser {
         this.file = file;
     }
 
-    public static Parser createWithFile(File file) {
+    public static Parser createWithFile(@NotNull File file) throws NullPointerException {
+        if (file == null) {
+            throw new NullPointerException("File is null");
+        }
+
         return new Parser(file);
     }
 
     public String getContent() throws IOException {
-        if (file == null) {
-            return "";
-        }
-
         FileInputStream i = new FileInputStream(file);
         StringBuilder output = new StringBuilder("");
         int data;
@@ -41,10 +41,6 @@ public class Parser {
     }
 
     public String getContentWithoutUnicode() throws IOException {
-        if (file == null) {
-            return "";
-        }
-
         FileInputStream i = new FileInputStream(file);
         StringBuilder output = new StringBuilder("");
         int data;
