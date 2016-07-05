@@ -34,7 +34,7 @@ public class Parser {
         String output = "";
         int data;
         while ((data = i.read()) > 0) {
-            if (data < 0x80) {
+            if (isByteNotUnicode(data)) {
                 output += (char) data;
             }
         }
@@ -46,5 +46,9 @@ public class Parser {
         for (int i = 0; i < content.length(); i += 1) {
             o.write(content.charAt(i));
         }
+    }
+
+    private static boolean isByteNotUnicode(int data) {
+        return data < 0x80;
     }
 }
