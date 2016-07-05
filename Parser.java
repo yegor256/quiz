@@ -27,25 +27,33 @@ public class Parser {
     }
 
     public String getContent() throws IOException {
+        if (file == null) {
+            return "";
+        }
+
         FileInputStream i = new FileInputStream(file);
-        String output = "";
+        StringBuilder output = new StringBuilder("");
         int data;
         while ((data = i.read()) > 0) {
-            output += (char) data;
+            output.append((char) data);
         }
-        return output;
+        return output.toString();
     }
 
     public String getContentWithoutUnicode() throws IOException {
+        if (file == null) {
+            return "";
+        }
+
         FileInputStream i = new FileInputStream(file);
-        String output = "";
+        StringBuilder output = new StringBuilder("");
         int data;
         while ((data = i.read()) > 0) {
             if (isByteNotUnicode(data)) {
-                output += (char) data;
+                output.append((char) data);
             }
         }
-        return output;
+        return output.toString();
     }
 
     public void saveContent(String content) throws IOException {
