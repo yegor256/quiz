@@ -1,5 +1,7 @@
 package quiz;
 
+import com.sun.istack.internal.Nullable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,14 +11,19 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
+
     private File file;
 
-    public synchronized void setFile(File f) {
-        file = f;
+    public synchronized @Nullable File getFile() {
+        return file;
     }
 
-    public synchronized File getFile() {
-        return file;
+    private Parser(File file) {
+        this.file = file;
+    }
+
+    public static Parser createWithFile(File file) {
+        return new Parser(file);
     }
 
     public String getContent() throws IOException {
