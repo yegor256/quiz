@@ -7,32 +7,35 @@ import java.io.IOException;
  */
 public class Parser {
   private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
+
   public synchronized File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+
+  public synchronized void setFile(File f) {
+    file = f;
   }
-  public String getContentWithoutUnicode() throws IOException {
+
+  public String getContent(boolean withUnicode) throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
+    if(withUnicode) {
+      while ((data = i.read()) > 0) {
         output += (char) data;
       }
     }
+    else {
+      while ((data = i.read()) > 0) {
+        if (data < 0x80) {
+          output += (char) data;
+        }
+      }
+
+    }
     return output;
   }
+
   public void saveContent(String content) throws IOException {
     FileOutputStream o = new FileOutputStream(file);
     for (int i = 0; i < content.length(); i += 1) {
