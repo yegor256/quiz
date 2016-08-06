@@ -15,12 +15,12 @@ public class Parser {
   }
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
-    String output = "";
+    StringBuilder output = new StringBuilder();
     int data;
     while ((data = i.read()) > 0) {
-      output += (char) data;
+      output.append((char) data);
     }
-    return output;
+    return output.toString();
   }
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
