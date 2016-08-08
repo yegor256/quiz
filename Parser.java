@@ -1,42 +1,56 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    private static final int UPPER_ASCII_CHAR_BOUND = 0x80;
+
+    private final File file;
+
+    public Parser(File file) {
+        this.file = file;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public synchronized File getFile() {
+        return file;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public String getContent() throws IOException {
+        Reader inputStreamReader = new InputStreamReader(
+                new FileInputStream(file)
+        );
+        StringBuilder output = new StringBuilder();
+        int data;
+        while ((data = inputStreamReader.read()) != -1) {
+            output.append((char) data);
+        }
+        inputStreamReader.close();
+        return output.toString();
     }
-  }
+
+    public String getContentWithoutUnicode() throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(file);
+        StringBuilder output = new StringBuilder();
+        int data;
+        while ((data = fileInputStream.read()) != -1) {
+            if (data < UPPER_ASCII_CHAR_BOUND) {
+                output.append((char) data);
+            }
+        }
+        fileInputStream.close();
+        return output.toString();
+    }
+
+    public void saveContent(String content) throws IOException {
+        Writer outputStreamWriter = new OutputStreamWriter(
+                new FileOutputStream(file), "UTF8"
+        );
+        for (int i = 0; i < content.length(); i++) {
+            outputStreamWriter.write(content.charAt(i));
+        }
+        outputStreamWriter.close();
+    }
+
 }
