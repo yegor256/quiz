@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * This class is thread safe.
@@ -21,12 +18,15 @@ public class Parser {
     }
 
     public String getContent() throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(file);
+        Reader inputStreamReader = new InputStreamReader(
+                new FileInputStream(file)
+        );
         StringBuilder output = new StringBuilder();
         int data;
-        while ((data = fileInputStream.read()) > 0) {
+        while ((data = inputStreamReader.read()) > 0) {
             output.append((char) data);
         }
+        inputStreamReader.close();
         return output.toString();
     }
 
@@ -39,13 +39,23 @@ public class Parser {
                 output.append((char) data);
             }
         }
+        fileInputStream.close();
         return output.toString();
     }
 
     public void saveContent(String content) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        Writer outputStreamWriter = new OutputStreamWriter(
+                new FileOutputStream(file), "UTF8"
+        );
         for (int i = 0; i < content.length(); i++) {
-            fileOutputStream.write(content.charAt(i));
+            outputStreamWriter.write(content.charAt(i));
         }
+        outputStreamWriter.close();
+    }
+
+    public static void main(String[] args) throws IOException {
+        System.out.println(new Parser(new File("/Users/baybatu/t0.txt")).getContent());
+        System.out.println(new Parser(new File("/Users/baybatu/t1.txt")).getContentWithoutUnicode());
+        new Parser(new File("/Users/baybatu/t3.txt")).saveContent("batu döldöş");
     }
 }
