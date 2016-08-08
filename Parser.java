@@ -23,7 +23,7 @@ public class Parser {
         );
         StringBuilder output = new StringBuilder();
         int data;
-        while ((data = inputStreamReader.read()) > 0) {
+        while ((data = inputStreamReader.read()) != -1) {
             output.append((char) data);
         }
         inputStreamReader.close();
@@ -34,7 +34,7 @@ public class Parser {
         FileInputStream fileInputStream = new FileInputStream(file);
         StringBuilder output = new StringBuilder();
         int data;
-        while ((data = fileInputStream.read()) > 0) {
+        while ((data = fileInputStream.read()) != -1) {
             if (data < UPPER_ASCII_CHAR_BOUND) {
                 output.append((char) data);
             }
