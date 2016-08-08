@@ -53,9 +53,4 @@ public class Parser {
         outputStreamWriter.close();
     }
 
-    public static void main(String[] args) throws IOException {
-        System.out.println(new Parser(new File("/Users/baybatu/t0.txt")).getContent());
-        System.out.println(new Parser(new File("/Users/baybatu/t1.txt")).getContentWithoutUnicode());
-        new Parser(new File("/Users/baybatu/t3.txt")).saveContent("batu döldöş");
-    }
 }
