@@ -1,49 +1,63 @@
 <?php
 class Document {
 
-    public $user;
-
+    public $user_id;
     public $name;
+    
+    private $title;
+    private $content;
 
-    public function init($name, User $user) {
+    public function init($name, $user_id) {
         assert(strlen($name) > 5);
-        $this->user = $user;
+        $this->user_id = $user_id;
         $this->name = $name;
+        
+        $row = $this->searchByName($name);
+        
+        $this->title = $row[3];
+        $this->content = $row[6];
+        
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        return $this->title;
     }
 
     public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        return $this->content;
     }
 
-    public static function getAllDocuments() {
-        // to be implemented later
+    private function searchByName($name){
+        $db = Database::getInstance();
+        $row = $db->query('SELECT * FROM document WHERE name = "' . $name . '" LIMIT 1');
+        
+        return $row;
+    }
+    
+    private function searchByUserId(){
+        $db = Database::getInstance();
+        $documents = $db->query(
+            'SELECT * 
+            FROM document d 
+            JOIN document_user du ON d.id = du.document_id
+            WHERE du.user_id = "$user_id" ');
+        return $documents;
     }
 
 }
 
 class User {
+    
+    public $user_id;
 
     public function makeNewDocument($name) {
         $doc = new Document();
-        $doc->init($name, $this);
+        $doc->init($name, $this->user_id);
         return $doc;
     }
 
     public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
-                $list[] = $doc;
-        }
-        return $list;
+        return Document::searchByUser($this->user_id);
     }
 
 }
