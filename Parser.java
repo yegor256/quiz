@@ -40,11 +40,17 @@ public class Parser {
 		}
 		return output;
 	}
-
+	
 	public void saveContent(String content) throws IOException {
-		FileOutputStream o = new FileOutputStream(file);
-		for (int i = 0; i < content.length(); i += 1) {
-			o.write(content.charAt(i));
+		if(content == null) {
+			throw new IllegalArgumentException("no content");
+		}
+		FileOutputStream os = new FileOutputStream(file);
+		try {
+			os.write(content.getBytes());
+			os.flush();
+		} finally {
+			os.close();
 		}
 	}
 }
