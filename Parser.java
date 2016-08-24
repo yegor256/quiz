@@ -13,31 +13,31 @@ public class Parser {
   }
 
   public String getContent() throws IOException {
-    String output = "";
+    StringBuilder output = new StringBuilder();
 
     try (FileInputStream i = new FileInputStream(file)) {
       int data;
       while ((data = i.read()) > 0) {
-        output += (char) data;
+        output.append((char) data);
       }
     }
 
-    return output;
+    return output.toString();
   }
 
   public String getContentWithoutUnicode() throws IOException {
-    String output = "";
+    StringBuilder output = new StringBuilder();
 
     try (FileInputStream i = new FileInputStream(file)) {
       int data;
       while ((data = i.read()) > 0) {
         if (data < 0x80) {
-          output += (char) data;
+          output.append((char) data);
         }
       }
     }
 
-    return output;
+    return output.toString();
   }
 
   public void saveContent(String content) throws IOException {
