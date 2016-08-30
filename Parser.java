@@ -22,8 +22,12 @@ public class Parser {
     FileInputStream fileInputStream = new FileInputStream(file);
     StringBuilder outputBuilder = new StringBuilder();
     int data;
-    while ((data = fileInputStream.read()) > 0) {
-      outputBuilder.append((char) data);
+    try {
+      while ((data = fileInputStream.read()) > 0) {
+        outputBuilder.append((char) data);
+      }
+    } finally {
+      fileInputStream.close();
     }
     return outputBuilder.toString();
   }
@@ -32,16 +36,24 @@ public class Parser {
     FileInputStream fileInputStream = new FileInputStream(file);
     StringBuilder outputBuilder = new StringBuilder();
     int data;
-    while ((data = fileInputStream.read()) > 0) {
-      if (data < 0x80) {
-        outputBuilder.append((char) data);
+    try {
+      while ((data = fileInputStream.read()) > 0) {
+        if (data < 0x80) {
+          outputBuilder.append((char) data);
+        }
       }
+    } finally {
+      fileInputStream.close();
     }
     return outputBuilder.toString();
   }
 
   public synchronized void saveContent(String content) throws IOException {
     FileOutputStream fileOutputStream = new FileOutputStream(file);
-    fileOutputStream.write(content.getBytes());
+    try {
+      fileOutputStream.write(content.getBytes());
+    } finally {
+      fileOutputStream.close();
+    }
   }
 }
