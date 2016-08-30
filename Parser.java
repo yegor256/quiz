@@ -42,8 +42,6 @@ public class Parser {
 
   public synchronized void saveContent(String content) throws IOException {
     FileOutputStream fileOutputStream = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      fileOutputStream.write(content.charAt(i));
-    }
+    fileOutputStream.write(content.getBytes());
   }
 }
