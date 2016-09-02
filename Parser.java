@@ -20,35 +20,33 @@ public class Parser {
   }
 
   public synchronized String getContent() throws IOException {
-    FileInputStream fileInputStream = new FileInputStream(file);
-    StringBuilder result = new StringBuilder();
-    try {
-      Reader reader = new BufferedReader(new InputStreamReader(fileInputStream));
-      char[] buffer = new char[DEFAULT_BUFFER_SIZE];
-      int read;
-      while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
-        result.append(buffer, 0, read);
-      }
-    } finally {
-      fileInputStream.close();
-    }
-
-    return result.toString();
+    return getContent(false);
   }
 
   public synchronized String getContentWithoutUnicode() throws IOException {
+    return getContent(true);
+  }
+
+  protected String getContent(boolean onlyAscii) throws IOException {
     FileInputStream fileInputStream = new FileInputStream(file);
     StringBuilder result = new StringBuilder();
     try {
       Reader reader = new BufferedReader(new InputStreamReader(fileInputStream));
       char[] buffer = new char[DEFAULT_BUFFER_SIZE];
       int read;
-      while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
-        for (int i = 0; i < read; i++) {
-          int charCode = (int) buffer[i];
-          if (charCode > ASCII_LOWER_BOUND && charCode < ASCII_UPPER_BOUND) { // char code between 31 and 128
-            result.append(buffer[i]);
+      if (onlyAscii) {
+        while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
+          for (int i = 0; i < read; i++) {
+            int charCode = (int) buffer[i];
+            if (charCode > ASCII_LOWER_BOUND && charCode < ASCII_UPPER_BOUND) { // char code between 31 and 128
+              result.append(buffer[i]);
+            }
           }
+        }
+
+      } else {
+        while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
+          result.append(buffer, 0, read);
         }
       }
     } finally {
