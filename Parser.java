@@ -43,7 +43,8 @@ public class Parser {
       int read;
       while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
         for (int i = 0; i < read; i++) {
-          if ((int) buffer[i] < 0x80) {
+          int charCode = (int) buffer[i];
+          if (charCode > 0x2F && charCode < 0x80) { // char code between 31 and 128
             result.append(buffer[i]);
           }
         }
