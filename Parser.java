@@ -56,11 +56,11 @@ public class Parser {
   }
 
   public synchronized void saveContent(String content) throws IOException {
-    FileOutputStream fileOutputStream = new FileOutputStream(file);
+    Writer writer = new BufferedWriter(new FileWriter(file));
     try {
-      fileOutputStream.write(content.getBytes());
+      writer.write(content);
     } finally {
-      fileOutputStream.close();
+      writer.close();
     }
   }
 }
