@@ -6,6 +6,8 @@ import java.io.*;
 public class Parser {
 
   public static final int DEFAULT_BUFFER_SIZE = 1024 * 16;
+  public static final int ASCII_LOWER_BOUND = 0x2F;
+  public static final int ASCII_UPPER_BOUND = 0x80;
 
   private File file;
 
@@ -44,7 +46,7 @@ public class Parser {
       while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
         for (int i = 0; i < read; i++) {
           int charCode = (int) buffer[i];
-          if (charCode > 0x2F && charCode < 0x80) { // char code between 31 and 128
+          if (charCode > ASCII_LOWER_BOUND && charCode < ASCII_UPPER_BOUND) { // char code between 31 and 128
             result.append(buffer[i]);
           }
         }
