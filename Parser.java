@@ -19,12 +19,15 @@ public class Parser {
         return file;
     }
 
-    public String getContentWithoutUnicode() throws IOException {
-        return getContent(new UnicodeFilteredContentProcessor());
+    public String getContent() throws IOException {
+        return getContent(true);
     }
 
-    public String getContent() throws IOException {
-        return getContent(new DefaultContentProcessor());
+    public String getContent(boolean filterUnicode) throws IOException {
+        return getContent(filterUnicode
+                ? new UnicodeFilteredContentProcessor()
+                : new DefaultContentProcessor()
+        );
     }
 
     public String getContent(ContentProcessor contentProcessor) throws IOException {
@@ -65,7 +68,7 @@ public class Parser {
 
     static class DefaultContentProcessor implements ContentProcessor {
 
-        private StringBuilder contentBuilder;
+        private final StringBuilder contentBuilder;
 
         public DefaultContentProcessor() {
             contentBuilder = new StringBuilder();
