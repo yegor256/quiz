@@ -1,42 +1,98 @@
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    private final File file;
+
+    public Parser(File file) {
+        this.file = file;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public File getFile() {
+        return file;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public String getContent() throws IOException {
+        return getContent(true);
     }
-  }
+
+    public String getContent(boolean filterUnicode) throws IOException {
+        return getContent(filterUnicode
+                ? new UnicodeFilteredContentProcessor()
+                : new DefaultContentProcessor()
+        );
+    }
+
+    public String getContent(ContentProcessor contentProcessor) throws IOException {
+        if (contentProcessor == null) {
+            throw new IllegalArgumentException("no content processor");
+        }
+        FileInputStream i = new FileInputStream(file);
+        int data;
+        try {
+            while ((data = i.read()) != -1) {
+                contentProcessor.process(data);
+            }
+        } finally {
+            i.close();
+        }
+        return contentProcessor.getContent();
+    }
+
+    public void saveContent(String content) throws IOException {
+        if (content == null) {
+            throw new IllegalArgumentException("no content");
+        }
+        FileOutputStream os = new FileOutputStream(file);
+        try {
+            os.write(content.getBytes());
+            os.flush();
+        } finally {
+            os.close();
+        }
+    }
+
+    public static interface ContentProcessor {
+
+        void process(int data);
+
+        String getContent();
+    }
+
+    static class DefaultContentProcessor implements ContentProcessor {
+
+        private final StringBuilder contentBuilder;
+
+        public DefaultContentProcessor() {
+            contentBuilder = new StringBuilder();
+        }
+
+        @Override
+        public void process(int data) {
+            contentBuilder.append(data);
+        }
+
+        @Override
+        public String getContent() {
+            return contentBuilder.toString();
+        }
+
+    }
+
+    static class UnicodeFilteredContentProcessor extends DefaultContentProcessor {
+
+        @Override
+        public void process(int data) {
+            if (data < 0x80) {
+                super.process(data);
+            }
+        }
+    }
 }
