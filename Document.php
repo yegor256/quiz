@@ -55,11 +55,11 @@ class Document
     }
 
     /**
-     * The getTitle function.
+     * Get document title.
      *
      * @return string document title
      */
-    public function getTitle() 
+    public function title() 
     {
         // move query to different line, so that the next line isn't too long
         $sql = 'SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1';
@@ -68,11 +68,11 @@ class Document
     }
 
     /**
-     * The getContent function
+     * Get document content.
      *
      * @return string document content
      */
-    public function getContent() 
+    public function content() 
     {
         $sql = 'SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1';
         $row = $this->database->query($sql);
@@ -80,11 +80,11 @@ class Document
     }
 
     /**
-     * The getAllDocuments function
+     * Get all document.
      *
      * @return array all documents
      */
-    public function getAllDocuments() 
+    public function all() 
     {
         // to be implemented later
     }

@@ -24,13 +24,11 @@ require_once 'Document.php';
  * @license  Foo License
  * @link     Link
  */
-class User
+class UserDocument
 {
     protected $document;
 
     /**
-     * The constructor
-     * 
      * Better create constructor and pass Document
      * as constructor argument
      *
@@ -45,13 +43,13 @@ class User
     }
 
     /**
-     * The makeNewDocument function
+     * Create user document.
      *
      * @param string $name Name parameter
      *
      * @return Document New Document
      */
-    public function makeNewDocument($name) 
+    public function create($name) 
     {
         // use document constructor to create new document
         // instead of init method
@@ -60,14 +58,14 @@ class User
     }
 
     /**
-     * The getMyDocuments function
+     * List of user document.
      *
      * @return array list of my documents
      */
-    public function getMyDocuments() 
+    public function listOf() 
     {
         $list = array();
-        foreach ($this->document->getAllDocuments() as $doc) {
+        foreach ($this->document->all() as $doc) {
             if ($doc->user == $this) {
                 $list[] = $doc; 
             }
