@@ -33,7 +33,7 @@ public class FileReadWriteHelper {
 
   /**
    * Reads content of corresponding file into string.
-   * It will skip Non-ASCII characters.
+   * It will skip Non-ASCII characters, if {@code onlyAscii} is true.
    * an I/O error occurs, if file does not exist.
    * stream is reached.
    *
@@ -41,11 +41,7 @@ public class FileReadWriteHelper {
    *
    * @throws IOException if I/O error occurs
    */
-  public String getContentWithoutUnicode() throws IOException {
-    return read(true);
-  }
-
-  protected String read(boolean onlyAscii) throws IOException {
+  public String read(boolean onlyAscii) throws IOException {
     readWriteLock.readLock().lock();
     FileInputStream fileInputStream = new FileInputStream(file);
     StringBuilder result = new StringBuilder();
