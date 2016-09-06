@@ -1,23 +1,23 @@
+import com.sun.istack.internal.NotNull;
+
 import java.io.*;
 
 /**
- * This class is thread safe.
+ * A thread-safe helper class for reading a files content as text,
+ * or writing text into it.
  */
-public class Parser {
+public class FileReadWriteHelper {
 
   public static final int DEFAULT_BUFFER_SIZE = 1024 * 16;
   public static final int ASCII_LOWER_BOUND = 0x2F;
   public static final int ASCII_UPPER_BOUND = 0x80;
 
-  private File file;
+  private final File file;
 
-  public synchronized void setFile(File file) {
+  public FileReadWriteHelper(File file) {
     this.file = file;
   }
 
-  public synchronized File getFile() {
-    return file;
-  }
 
   public synchronized String getContent() throws IOException {
     return getContent(false);
