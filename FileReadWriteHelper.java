@@ -63,9 +63,13 @@ public class FileReadWriteHelper {
       }
 
     } finally {
-      fileInputStream.close();
+      try {
+        fileInputStream.close();
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
     }
-    readWriteLock.readLock().unlock();
+
     return result.toString();
   }
 
@@ -83,8 +87,11 @@ public class FileReadWriteHelper {
     try {
       writer.write(content);
     } finally {
-      writer.close();
+      try {
+        writer.close();
+      } finally {
+        readWriteLock.writeLock().unlock();
+      }
     }
-    readWriteLock.writeLock().unlock();
   }
 }
