@@ -1,6 +1,7 @@
 import com.sun.istack.internal.NotNull;
-
 import java.io.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * A thread-safe helper class for reading a files content as text,
@@ -11,20 +12,23 @@ public class FileReadWriteHelper {
   public static final int DEFAULT_BUFFER_SIZE = 1024 * 16;
 
   private final File file;
+  private ReadWriteLock readWriteLock;
 
   public FileReadWriteHelper(File file) {
     this.file = file;
+    this.readWriteLock = new ReentrantReadWriteLock();
   }
 
-  public synchronized String getContent() throws IOException {
+  public String getContent() throws IOException {
     return getContent(false);
   }
 
-  public synchronized String getContentWithoutUnicode() throws IOException {
+  public String getContentWithoutUnicode() throws IOException {
     return getContent(true);
   }
 
   protected String getContent(boolean onlyAscii) throws IOException {
+    readWriteLock.readLock().lock();
     FileInputStream fileInputStream = new FileInputStream(file);
     StringBuilder result = new StringBuilder();
     try {
@@ -47,16 +51,18 @@ public class FileReadWriteHelper {
     } finally {
       fileInputStream.close();
     }
-
+    readWriteLock.readLock().unlock();
     return result.toString();
   }
 
-  public synchronized void saveContent(String content) throws IOException {
+  public void saveContent(String content) throws IOException {
+    readWriteLock.writeLock().lock();
     Writer writer = new BufferedWriter(new FileWriter(file));
     try {
       writer.write(content);
     } finally {
       writer.close();
     }
+    readWriteLock.writeLock().unlock();
   }
 }
