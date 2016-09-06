@@ -9,15 +9,12 @@ import java.io.*;
 public class FileReadWriteHelper {
 
   public static final int DEFAULT_BUFFER_SIZE = 1024 * 16;
-  public static final int ASCII_LOWER_BOUND = 0x2F;
-  public static final int ASCII_UPPER_BOUND = 0x80;
 
   private final File file;
 
   public FileReadWriteHelper(File file) {
     this.file = file;
   }
-
 
   public synchronized String getContent() throws IOException {
     return getContent(false);
@@ -34,21 +31,19 @@ public class FileReadWriteHelper {
       Reader reader = new BufferedReader(new InputStreamReader(fileInputStream));
       char[] buffer = new char[DEFAULT_BUFFER_SIZE];
       int read;
-      if (onlyAscii) {
-        while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
-          for (int i = 0; i < read; i++) {
-            int charCode = (int) buffer[i];
-            if (charCode > ASCII_LOWER_BOUND && charCode < ASCII_UPPER_BOUND) { // char code between 31 and 128
-              result.append(buffer[i]);
-            }
-          }
-        }
 
+      // we can also put this {@code if} inside the following {@code while},
+      // but this way is more efficient, since {@code if} check would runs just once.
+      if (onlyAscii) {
+        while ((reader.read(buffer, 0, buffer.length)) > 0) {
+            result.append(String.valueOf(buffer).replaceAll("[^ -~]", ""));
+        }
       } else {
         while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
           result.append(buffer, 0, read);
         }
       }
+
     } finally {
       fileInputStream.close();
     }
