@@ -18,15 +18,15 @@ public class FileReadWriteHelper {
     this.readWriteLock = new ReentrantReadWriteLock();
   }
 
-  public String getContent() throws IOException {
-    return getContent(false);
+  public String read() throws IOException {
+    return read(false);
   }
 
   public String getContentWithoutUnicode() throws IOException {
-    return getContent(true);
+    return read(true);
   }
 
-  protected String getContent(boolean onlyAscii) throws IOException {
+  protected String read(boolean onlyAscii) throws IOException {
     readWriteLock.readLock().lock();
     FileInputStream fileInputStream = new FileInputStream(file);
     StringBuilder result = new StringBuilder();
@@ -54,7 +54,7 @@ public class FileReadWriteHelper {
     return result.toString();
   }
 
-  public void saveContent(String content) throws IOException {
+  public void write(String content) throws IOException {
     readWriteLock.writeLock().lock();
     Writer writer = new BufferedWriter(new FileWriter(file));
     try {
