@@ -18,10 +18,29 @@ public class FileReadWriteHelper {
     this.readWriteLock = new ReentrantReadWriteLock();
   }
 
+  /**
+   * Reads content of corresponding file into string.
+   * an I/O error occurs, if file does not exits.
+   * stream is reached.
+   *
+   * @return an string representing content of the file
+   *
+   * @throws IOException if I/O error occurs
+   */
   public String read() throws IOException {
     return read(false);
   }
 
+  /**
+   * Reads content of corresponding file into string.
+   * It will skip Non-ASCII characters.
+   * an I/O error occurs, if file does not exist.
+   * stream is reached.
+   *
+   * @return an string representing content of the file
+   *
+   * @throws IOException if I/O error occurs
+   */
   public String getContentWithoutUnicode() throws IOException {
     return read(true);
   }
@@ -54,6 +73,14 @@ public class FileReadWriteHelper {
     return result.toString();
   }
 
+  /**
+   * Write an string into the corresponding file.
+   * It will create a new file if the file does not exist.
+   *
+   * @param content that we want to write to the file.
+   *
+   * @throws IOException if I/O error occurs
+   */
   public void write(String content) throws IOException {
     readWriteLock.writeLock().lock();
     Writer writer = new BufferedWriter(new FileWriter(file));
