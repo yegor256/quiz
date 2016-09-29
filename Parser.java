@@ -8,12 +8,8 @@ import java.io.IOException;
 public class Parser {
   private File file;
 
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-
-  public synchronized File getFile() {
-    return file;
+  public Parser(File file) {
+     this.file = file;
   }
 
   public String getContent() throws IOException {
