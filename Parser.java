@@ -6,37 +6,48 @@ import java.io.IOException;
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+  
+  protected interface Condition {
+  	public boolean check(int input);
   }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+  
+  private String getContent(File file, Condition condition) throws IOException {
+    FileInputStream i = null;
+    try {
+      i = new FileInputStream(file);
+      StringBuffer output = new StringBuffer();
+      int data;
+      while ((data = i.read()) > 0) {
+        if (condition == null || condition.check(data)) {
+          output.append((char) data);
+        }
       }
+      return output.toString();
+    } finally {
+      if (i != null) { try {i.close();} catch (IOException e) {} }
     }
-    return output;
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+  
+  public String getContent(File file) throws IOException {
+    return getContent(file, null);
+    
+  }
+  public String getContentWithoutUnicode(File file) throws IOException {
+    return getContent(file, new Condition(){
+      public boolean check(int input) {
+        return input < 0x80;
+      }
+    });
+  }
+  public void  saveContent(String content, File file) throws IOException {
+    FileOutputStream o = null;
+    try {
+      o = new FileOutputStream(file);
+      for (int i = 0; i < content.length(); i += 1) {
+        o.write(content.charAt(i));
+      }
+    } finally {
+      if (o != null) { try {o.close();} catch (IOException e) {} }
     }
   }
 }
