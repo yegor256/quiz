@@ -20,7 +20,7 @@ public class Parser {
   }
 
   public String getContent() throws IOException {
-    byte[] bytes = Files.readAllBytes(file.getPath());
+    byte[] bytes = Files.readAllBytes(file.toPath());
     return new String(bytes);
   }
   //TODO: implement a FilteredInputStream that takes a lambda for which characters to skip
