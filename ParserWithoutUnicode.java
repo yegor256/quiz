@@ -5,9 +5,9 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public class Parser implements FileParser {
+public class ParserWithoutUnicode implements FileParser {
   private final File file;
-  public Parser(final File file) {
+  public ParserWithoutUnicode(final File file) {
       this.file = file;
   }
   public synchronized File file() {
@@ -18,7 +18,9 @@ public class Parser implements FileParser {
       final StringBuilder output = new StringBuilder();
       int data;
       while ((data = i.read()) > 0) {
-          output.append((char) data);
+          if (data < 0x80) {
+              output.append((char) data);
+          }
       }
       return output.toString();
   }
