@@ -5,6 +5,7 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
+@Deprecated
 public class Parser {
   private File file;
   public synchronized void setFile(File f) {
@@ -33,6 +34,7 @@ public class Parser {
     }
     return output;
   }
+
   public void saveContent(String content) throws IOException {
     FileOutputStream o = new FileOutputStream(file);
     for (int i = 0; i < content.length(); i += 1) {
