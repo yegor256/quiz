@@ -12,19 +12,31 @@ class Document {
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        $doc = $this->getDocument();
+        return $doc['title'];
     }
 
     public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        $doc = $this->getDocument();
+        return $doc['content'];
     }
 
     public static function getAllDocuments() {
-        // to be implemented later
+        $db = Database::getInstance();
+        $rows = $db->query('SELECT * FROM document');
+        return $rows;
+    }
+
+    public static function getUserDocuments($user) {
+        $db = Database::getInstance();
+        $rows = $db->query('SELECT * FROM document WHERE username = ' . mysqli_real_escape_string($user));
+        return $rows;
+    }
+
+    private function getDocument() {
+        $db = Database::getInstance();
+        $row = $db->query('SELECT * FROM document WHERE name = "' . mysqli_real_escape_string($this->name) . '" LIMIT 1');
+        return $row;
     }
 
 }
@@ -38,12 +50,7 @@ class User {
     }
 
     public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
-                $list[] = $doc;
-        }
-        return $list;
+        return Document::getUserDocuments($this->name);
     }
 
 }
