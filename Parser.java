@@ -7,6 +7,14 @@ import java.io.IOException;
  */
 public class Parser {
   private File file;
+  
+  public Parser(File f){
+    
+    if(f==null)
+      throw new IllegalArgumentException("The file must not be null");
+    file=f;
+  }
+  
   public synchronized void setFile(File f) {
     file = f;
   }
