@@ -13,26 +13,18 @@ public class Parser {
   public synchronized File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
+  public String getContent(boolean unicode) throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
     int data;
     while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
+      if( (!unicode && data < 0x80) || unicode){
         output += (char) data;
       }
     }
     return output;
   }
+  
   public void saveContent(String content) throws IOException {
     FileOutputStream o = new FileOutputStream(file);
     for (int i = 0; i < content.length(); i += 1) {
