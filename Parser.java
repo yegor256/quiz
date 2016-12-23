@@ -1,42 +1,99 @@
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    private File file = null;
+
+    /**
+     *
+     * @param f
+     */
+    public void setFile(File f) {
+        file = f;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    /**
+     *
+     * @param title
+     */
+    public void setFile(String title) {
+        file = new File(title);
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    /**
+     *
+     * @return
+     */
+    public File getFile() {
+        return file;
     }
-  }
+
+    /**
+     *
+     * @param withUnicode
+     * @return
+     */
+    public synchronized String getContent(boolean withUnicode) {
+        FileInputStream i = null;
+        String output = "";
+        try {
+            i = new FileInputStream(file);
+
+            int data;
+            while ((data = i.read()) > 0) {
+                output += (char) data;
+            }
+            if (withUnicode && (data < 0x80)) {
+                output += (char) data;
+            }
+
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                i.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return output;
+    }
+
+    public synchronized void saveContent(String content) {
+        FileOutputStream o = null;
+        try {
+            o = new FileOutputStream(file);
+            for (char c : content.toCharArray()) {
+                o.write(c);
+            }
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                o.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 }
