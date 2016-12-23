@@ -2,41 +2,38 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.*;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
   private File file;
-  public synchronized void setFile(File f) {
+  private String content;
+  private String contentWithoutUnicode;
+  public synchronized void setFile(File f) throws IOException {
     file = f;
+    if (file != null) {
+      Path filePath = file.toPath();
+      content = new String(Files.readAllBytes(filePath));
+      contentWithoutUnicode = content.replaceAll("[^\\x00-\\x7F]", "");
+    } else {
+      content = null;
+      contentWithoutUnicode = null;
+    }
   }
   public synchronized File getFile() {
     return file;
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+  public String getContent() {
+    return content;
   }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
+  public String getContentWithoutUnicode() {
+    return contentWithoutUnicode;
   }
   public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    if (file != null) {
+      Files.write(file.toPath(), content.getBytes());
     }
   }
 }
