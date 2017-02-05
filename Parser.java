@@ -1,42 +1,63 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public class Parser {
+public final class Parser {
+
   private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+  
+  public Parser(File file) {
+    this.file = file;
   }
-  public synchronized File getFile() {
-    return file;
+  
+  public Parser(String path) {
+    this(new File(path));
   }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
+  
+  public final synchronized String content() throws IOException {
+    final FileInputStream fis = new FileInputStream(file);
+    final Reader reader = new BufferedReader(new InputStreamReader(fis, "UTF8"));
+    final StringBuffer output = new StringBuffer();
     int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    while ((data = reader.read()) > 0) {
+      output.append((char)data);
     }
-    return output;
+    reader.close();
+    return new String(output);
   }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
+  
+  public final synchronized String getContentWithoutUnicode() throws IOException {
+    final FileInputStream fis = new FileInputStream(file);
+    final StringBuffer output = new StringBuffer();
     int data;
-    while ((data = i.read()) > 0) {
+    while ((data = fis.read()) > 0) {
       if (data < 0x80) {
-        output += (char) data;
+        output.append((char) data);
       }
     }
-    return output;
+    fis.close();
+    return new String(output);
   }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
+  
+  public final synchronized void write(String content) throws IOException {
+    final FileOutputStream o = new FileOutputStream(file);
+    final BufferedOutputStream bso = new BufferedOutputStream(o);
     for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+      bso.write(content.charAt(i));
     }
+    bso.close();
+  }
+  
+  public static void main(String s[]) throws IOException {
+    final Parser p = new Parser("profile.txt");
+    System.out.println(p.content());
+    //p.write(s[0]);
   }
 }
