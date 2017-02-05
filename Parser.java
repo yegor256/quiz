@@ -1,42 +1,46 @@
+package parser;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 /**
  * This class is thread safe.
  */
-public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+public class Parser implements java.io.Serializable {
+    private File file;
+    private BufferedReader br = null;
+    private String line = null;
+    public synchronized void setFile(File f) {
+        file = f;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+    public synchronized File getFile() {
+        return file;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    public void getContent() throws IOException {
+        br = new BufferedReader(new FileReader(file));
+        readLine(br);
     }
-  }
+    public void getContentWithoutUnicode() throws IOException {
+        br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "ASCII"));
+        readLine(br);
+    }
+    public void saveContent(String content) throws IOException {
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        BufferedWriter bw = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+        bw.write(content);
+        bw.close();
+    }
+    public void readLine(BufferedReader br) throws IOException {
+        line = null;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+        }
+        br.close();
+    }
 }
