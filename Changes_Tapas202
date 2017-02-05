@@ -1,0 +1,12 @@
+Changes to be required
+1. getContentt() function : 
+    a. output in the function should not be declared as String.
+     Its memory expensive. Stringbuilder is preffered/rcommended.
+    b. no need to read byte by byte. Can use BufferedReader/RandomFile instead.
+
+2.In SaveContent function :
+  a. o.flush() and o.close() is not used.
+      The file wont be written properly and completely.
+
+  b. o.write() - writing byte by byte is not recomended.
+     We can use BufferedWriter instead.
