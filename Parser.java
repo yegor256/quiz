@@ -1,42 +1,75 @@
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 /**
- * This class is thread safe.
+ * This class is immutable.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    private final File file;
+    private String content;
+    private String contentWithoutUnicode;
+    private FileInputStream fileInputStream;
+
+    public Parser(File file) {
+        this.file = file;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public String getContent() {
+        if (content != null) return content;
+        content = getContentInternal(true);
+        return content;
     }
-    return output;
-  }
-  public void saveContent(String content) throws IOException {
-    FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+
+    public String getContentWithoutUnicode() {
+        if (contentWithoutUnicode != null) return contentWithoutUnicode;
+        contentWithoutUnicode = getContentInternal(false);
+        return contentWithoutUnicode;
     }
-  }
+
+    private String getContentInternal(boolean unicode) {
+        loadFile();
+        StringBuilder sb = new StringBuilder();
+        int data;
+        try {
+            while ((data = fileInputStream.read()) > 0) {
+                if (unicode) sb.append(data);
+                else if (data < 0x80) {
+                    sb.append(data);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(/* appropriate message */);
+        }
+        return sb.toString();
+    }
+
+    private void loadFile() {
+        if (fileInputStream != null) return;
+        try {
+            fileInputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(/* appropriate message */);
+        }
+    }
+
+    public void saveContent(String content) {
+        BufferedOutputStream bos = null;
+        try {
+            bos = new BufferedOutputStream(new FileOutputStream(file));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(/* appropriate message */);
+        }
+
+        try {
+            bos.write(content.getBytes());
+            bos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(/* appropriate message */);
+        }
+    }
 }
