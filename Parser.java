@@ -13,7 +13,6 @@ public class Parser {
     private final File file;
     private String content;
     private String contentWithoutUnicode;
-    private FileInputStream fileInputStream;
 
     public Parser(File file) {
         this.file = file;
@@ -32,31 +31,41 @@ public class Parser {
     }
 
     private String getContentInternal(boolean unicode) {
-        loadFile();
+        FileInputStream fis = loadStream();
         StringBuilder sb = new StringBuilder();
         int data;
         try {
-            while ((data = fileInputStream.read()) > 0) {
+            while ((data = fis.read()) > 0) {
                 if (unicode) sb.append(data);
                 else if (data < 0x80) {
                     sb.append(data);
                 }
             }
         } catch (IOException e) {
+            closeStream(fis);
             throw new RuntimeException(/* appropriate message */);
         }
+        closeStream(fis);
         return sb.toString();
     }
 
-    private void loadFile() {
-        if (fileInputStream != null) return;
+    private FileInputStream loadStream() {
+        FileInputStream fis;        
         try {
-            fileInputStream = new FileInputStream(file);
+            fis = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(/* appropriate message */);
         }
+        return fis;
     }
 
+    private void closeStream(FileInputStream fis) {
+        try {
+            fis.close();
+        } catch (IOException e) {
+            throw new RuntimeException(/* appropriate message */);
+        }
+    }
     public void saveContent(String content) {
         BufferedOutputStream bos = null;
         try {
