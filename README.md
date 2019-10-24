@@ -1,5 +1,3 @@
-[![Made By Teamed.io](http://img.teamed.io/btn.svg)](http://www.teamed.io)
-
 Imagine you're assigned as a developer to this project and you
 have to make the first step in refactoring of one of these classes
 (choose one, by the language you're most comfortable in).
@@ -12,7 +10,5 @@ do just the first step in refactoring. Don't fix everything.
 
 Also, if you think that something else must be refactored further,
 put your ideas into the description of the pull request.
-
-[Apply here](http://www.teamed.io/join.html).
 
 Thanks!
