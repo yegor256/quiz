@@ -12,15 +12,17 @@ class Document {
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        return $this->getColumn(3); // third column in a row
     }
 
     public function getContent() {
+        return $this->getColumn(6); // sixth column in a row
+    }
+
+    private function getColumn($column) {
         $db = Database::getInstance();
         $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        return $row[$column]; // sixth column in a row
     }
 
     public static function getAllDocuments() {
