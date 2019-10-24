@@ -20,8 +20,7 @@ public class Parser {
     return getContent(true);
   }
   public void saveContent(String content) {
-    FileOutputStream o = new FileOutputStream(file);
-    try {
+    try (FileOutputStream o = new FileOutputStream(file)) {
       for (int i = 0; i < content.length(); i += 1) {
         o.write(content.charAt(i));
       }
@@ -29,15 +28,16 @@ public class Parser {
       e.printStackTrace();
     }
   }
-  private String getContent(boolean withoutUnicode) throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if(!withoutUnicode || data < 0x80) {
-        output += (char) data;
-      })
+  private String getContent(boolean withUnicode) throws IOException {
+    try (FileInputStream i = new FileInputStream(file)) {
+      String output = "";
+      int data;
+      while ((data = i.read()) > 0) {
+        if(withUnicode || data >= 0x80) {
+          output += (char) data;
+        })
+      }
+      return output;
     }
-    return output;
   }
 }
