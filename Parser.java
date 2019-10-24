@@ -14,10 +14,10 @@ public class Parser {
     return file;
   }
   public String getContent() throws IOException {
-    return getContent(false);
+    return getContent(true);
   }
   public String getContentWithoutUnicode() throws IOException {
-    return getContent(true);
+    return getContent(false);
   }
   public void saveContent(String content) {
     try (FileOutputStream o = new FileOutputStream(file)) {
