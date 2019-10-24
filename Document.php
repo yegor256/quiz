@@ -35,7 +35,11 @@ class User {
 
     public function getMyDocuments() {
         $db = Database::getInstance();
-        return $db->query('SELECT * FROM document WHERE user_id = ' . $this.id);
+        $list = array();
+        foreach ($db->query('SELECT name FROM document WHERE user_id = ' . $this->id) as $name) {
+            $list[] = $this->makeNewDocument($name);
+        }
+        return $list;
     }
 
 }
