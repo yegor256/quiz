@@ -33,10 +33,14 @@ public class Parser {
     }
     return output;
   }
-  public void saveContent(String content) throws IOException {
+  public void saveContent(String content) {
     FileOutputStream o = new FileOutputStream(file);
-    for (int i = 0; i < content.length(); i += 1) {
-      o.write(content.charAt(i));
+    try {
+      for (int i = 0; i < content.length(); i += 1) {
+        o.write(content.charAt(i));
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 }
