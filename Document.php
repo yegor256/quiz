@@ -25,25 +25,17 @@ class Document {
         return $row[$column]; // sixth column in a row
     }
 
-    public static function getUserDocuments(User $user) {
-        // to be implemented later
-    }
-
-    public static function getAllDocuments() {
-        // to be implemented later
-    }
-
 }
 
 class User {
 
     public function makeNewDocument($name) {
-        $doc = new Document($name, $this);
-        return $doc;
+        return new Document($name, $this);
     }
 
     public function getMyDocuments() {
-        return Document::getUserDocuments($this);
+        $db = Database::getInstance();
+        return $db->query('SELECT * FROM document WHERE user_id = ' . $this.id);
     }
 
 }
