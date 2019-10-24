@@ -5,7 +5,7 @@ class Document {
 
     public $name;
 
-    public function init($name, User $user) {
+    public function __construct($name, User $user) {
         assert(strlen($name) > 5);
         $this->user = $user;
         $this->name = $name;
@@ -25,6 +25,10 @@ class Document {
         return $row[$column]; // sixth column in a row
     }
 
+    public static function getUserDocuments(User $user) {
+        // to be implemented later
+    }
+
     public static function getAllDocuments() {
         // to be implemented later
     }
@@ -34,18 +38,12 @@ class Document {
 class User {
 
     public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
+        $doc = new Document($name, $this);
         return $doc;
     }
 
     public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
-                $list[] = $doc;
-        }
-        return $list;
+        return Document::getUserDocuments($this);
     }
 
 }
