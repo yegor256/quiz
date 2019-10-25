@@ -1,9 +1,9 @@
 <?php
 class Document {
 
-    public $user;
+    private $user;
 
-    public $name;
+    private $name;
 
     public function __construct($name, User $user) {
         assert(strlen($name) > 5);

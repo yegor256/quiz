@@ -1,6 +1,12 @@
 <?php
 class User {
 
+    private $id;
+
+    public function __construct($id) {
+        $this->id = $id;
+    }
+    
     public function makeNewDocument($name) {
         return new Document($name, $this);
     }
