@@ -5,9 +5,9 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public class EnhansedFile {
+public class FileWithContent {
   private File file;
-  public EnhansedFile(File f) {
+  public FileWithContent(File f) {
     this.file = f;
   }
   public String getContent() throws IOException {
@@ -16,7 +16,7 @@ public class EnhansedFile {
   public String getContentWithoutUnicode() throws IOException {
     return getContent(false);
   }
-  public void saveContent(String content) {
+  public synchronized void saveContent(String content) {
     try (FileOutputStream o = new FileOutputStream(file)) {
       for (int i = 0; i < content.length(); i += 1) {
         o.write(content.charAt(i));
@@ -25,7 +25,7 @@ public class EnhansedFile {
       e.printStackTrace();
     }
   }
-  private String getContent(boolean withUnicode) throws IOException {
+  private synchronized String getContent(boolean withUnicode) throws IOException {
     try (FileInputStream i = new FileInputStream(file)) {
       String output = "";
       int data;
