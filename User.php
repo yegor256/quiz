@@ -7,7 +7,7 @@ class User {
         $this->id = $id;
     }
     
-    public function makeNewDocument($name) {
+    public function createDocument($name) {
         return new Document($name, $this);
     }
 
@@ -15,7 +15,7 @@ class User {
         $db = Database::getInstance();
         $list = array();
         foreach ($db->query('SELECT name FROM document WHERE user_id = ' . $this->id) as $name) {
-            $list[] = $this->makeNewDocument($name);
+            $list[] = $this->createDocument($name);
         }
         return $list;
     }
