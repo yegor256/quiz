@@ -5,42 +5,66 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
-  }
-  public void saveContent(String content) {
-    FileOutputStream o = new FileOutputStream(file);
-    try {
-      for (int i = 0; i < content.length(); i += 1) {
-        o.write(content.charAt(i));
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
+public interface Parser {
+	public String content() throws IOException;
+}
+
+public interface Writer {
+	public void save(String content) throws IOException;
+}
+
+public final class SimpleFileParser implements Parser {
+	private final File file;
+
+	public SimpleFileParser(File file) {
+		this.file = file;
+	}
+
+	public String content() throws IOException {
+		try (FileInputStream inputStream = new FileInputStream(this.file)) {
+			StringBuilder output = new StringBuilder();
+			int data;
+			while ((data = inputStream.read()) > 0) {
+				output.append((char) data);
+			}
+			return output.toString();
+		}
+	}
+}
+public final class FileParserWithoutUnicode implements Parser {
+	private final SimpleFileParser simpleFileParser;
+	private static final int UNICODE_CHAR = 0x80;
+
+	public FileParserWithoutUnicode(SimpleFileParser simpleFileParser) {
+		this.simpleFileParser = simpleFileParser;
+	}
+
+	public String content() throws IOException {
+		StringBuilder output = new StringBuilder();
+		String fileContent = simpleFileParser.content();
+		for(int i = 0; i < fileContent.length(); i++){
+			char symbol = fileContent.charAt(i);
+			if((int)symbol < UNICODE_CHAR){
+				output.append(symbol);
+			}
+		}
+		return output.toString();
+	}
+}
+
+public final class FileWriter implements Writer{
+	private final File file;
+	
+	public FileWriter(File file){
+		this.file = file;
+	}
+
+	@Override
+	public void save(String content) throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(this.file)) {
+            for (int i = 0; i < content.length(); i++) {
+                fileOutputStream.write(content.charAt(i));
+            }
+        }
+	}
 }
