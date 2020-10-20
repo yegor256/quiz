@@ -6,8 +6,8 @@ public class Parser {
   public final File file;
   private final FileInputStream inputStream;
 
-  public Parser(File file) throws FileNotFoundException {
-    if (file == null) throw new FileNotFoundException("input file is null");
+  public Parser(File file) throws IOException {
+    if (file == null) throw new IOException("input file is null");
     this.file = file;
     this.inputStream = new FileInputStream(file);
   }
@@ -39,13 +39,10 @@ public class Parser {
   }
 
   private void contentAsChar(boolean unicode, StringBuilder builder, int content) {
-    if (unicode) {
-      if (content < 0x80) {
-        builder.append((char) content);
-      }
-    } else {
-      builder.append((char) content);
+    if (unicode && content > 0x80) {
+      return;
     }
+    builder.append((char) content);
   }
 
 }
