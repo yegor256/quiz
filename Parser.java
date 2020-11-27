@@ -1,46 +1,52 @@
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
-  }
-  public void saveContent(String content) {
-    FileOutputStream o = new FileOutputStream(file);
-    try {
-      for (int i = 0; i < content.length(); i += 1) {
-        o.write(content.charAt(i));
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
+	private File file;
+
+	public synchronized void setFile(File f) {
+		file = f;
+	}
+
+	public synchronized File getFile() {
+		return file;
+	}
+
+	public synchronized String getContent() throws IOException {
+		StringBuilder builder = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			builder.append(br.readLine());
+		}
+		return builder.toString();
+	}
+
+	public synchronized String getContentWithoutUnicode() throws IOException {
+		StringBuilder builder = new StringBuilder();
+		try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file))) {
+			byte[] bytes = new byte[1024];
+			while (fis.read(bytes) > 0) {
+				for (int i = 0; i < bytes.length; i++) {
+					if (bytes[i] < 0x80) {
+						builder.append((char) bytes[i]);
+					}
+				}
+			}
+		}
+	    return builder.toString();
+	}
+
+	public synchronized void saveContent(String content) throws IOException {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+			bw.write(content);			
+		}
+	}
 }
