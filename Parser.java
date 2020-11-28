@@ -13,15 +13,15 @@ import java.io.IOException;
 public class Parser {
 	private File file;
 
-	public synchronized void setFile(File f) {
+	public Parser(File f) {
 		file = f;
 	}
 
-	public synchronized File getFile() {
+	public File getFile() {
 		return file;
 	}
 
-	public synchronized String getContent() throws IOException {
+	public String getContent() throws IOException {
 		StringBuilder builder = new StringBuilder();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			builder.append(br.readLine());
@@ -29,7 +29,7 @@ public class Parser {
 		return builder.toString();
 	}
 
-	public synchronized String getContentWithoutUnicode() throws IOException {
+	public String getContentWithoutUnicode() throws IOException {
 		StringBuilder builder = new StringBuilder();
 		try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(file))) {
 			byte[] bytes = new byte[1024];
@@ -44,7 +44,7 @@ public class Parser {
 	    return builder.toString();
 	}
 
-	public synchronized void saveContent(String content) throws IOException {
+	public void saveContent(String content) throws IOException {
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
 			bw.write(content);			
 		}
