@@ -5,10 +5,10 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+public final class Parser {
+  private final File file;
+  public Parser(final File f) {
+      this.file = f;
   }
   public synchronized File getFile() {
     return file;
