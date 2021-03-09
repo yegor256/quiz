@@ -7,13 +7,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class Parser {
   private final int BUFFER_SIZE = 4096;
-  private final File file;
   private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-  public Parser(File file) {
+  private File file;
+  public void setFile(File file) {
+    readWriteLock.writeLock().lock();
     this.file = file;
+    readWriteLock.writeLock().unlock();
   }
   public File getFile() {
-    return file;
+      return file;
   }
   public String getContent() throws IOException {
     return read(false);
@@ -24,7 +26,13 @@ public class Parser {
   public String read(final boolean withoutUnicode) throws IOException {
     readWriteLock.readLock().lock();
     try (BufferedReader reader = new BufferedReader(new FileReader((file)))) {
-      StringBuilder sb = new StringBuilder(file.length() < Integer.MAX_VALUE? (int) file.length(): Integer.MAX_VALUE);
+      long fileLength = file.length();
+      if (fileLength > Integer.MAX_VALUE) {
+        throw new IOException("File is too big for String, " + fileLength + " bytes.");
+      } else if (fileLength == 0) {
+        return "";
+      }
+      StringBuilder sb = new StringBuilder((int) fileLength);
       char[] readBuffer = new char[BUFFER_SIZE];
       int sbIndex = 0;
       int read;
