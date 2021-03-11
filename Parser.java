@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Parser {
     private final int BUFFER_SIZE = 4096;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    private File file;
+    private volatile File file;
 
     public void setFile(File file) {
         readWriteLock.writeLock().lock();
