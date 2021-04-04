@@ -7,7 +7,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * This class is thread safe.
  */
 public class Parser {
-    private final int BUFFER_SIZE = 4096;
+    private final int READ_BUFFER_SIZE = 4096;
+    private final int WRITE_BUFFER_SIZE = 4096;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private volatile File file;
 
@@ -21,15 +22,15 @@ public class Parser {
         return file;
     }
 
-    public String getContent() throws IOException {
+    public String getContent() throws IOException, InterruptedException {
         return read(false);
     }
 
-    public String getContentWithoutUnicode() throws IOException {
+    public String getContentWithoutUnicode() throws IOException, InterruptedException {
         return read(true);
     }
 
-    public String read(final boolean withoutUnicode) throws IOException {
+    public String read(final boolean withoutUnicode) throws IOException, InterruptedException {
         readWriteLock.readLock().lock();
         try (BufferedReader reader = new BufferedReader(new FileReader((file)))) {
             long fileLength = file.length();
@@ -39,7 +40,7 @@ public class Parser {
                 return "";
             }
             StringBuilder sb = new StringBuilder((int) fileLength);
-            char[] readBuffer = new char[BUFFER_SIZE];
+            char[] readBuffer = new char[READ_BUFFER_SIZE];
             int sbIndex = 0;
             int read;
             do {
@@ -56,6 +57,9 @@ public class Parser {
                         sb.append(readBuffer, 0, read);
                     }
                 }
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("File was not read");
+                }
             } while (read > 0);
             return sb.toString();
         } finally {
@@ -63,10 +67,17 @@ public class Parser {
         }
     }
 
-    public void saveContent(String content) throws IOException {
+    public void saveContent(String content) throws IOException, InterruptedException {
         readWriteLock.writeLock().lock();
         try (FileOutputStream o = new FileOutputStream(file)) {
-            o.write(content.getBytes(StandardCharsets.UTF_8));
+            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+            for (int i = 0; i < (contentBytes.length + 1) / WRITE_BUFFER_SIZE; i++) {
+                int offset = Math.min(contentBytes.length - i * WRITE_BUFFER_SIZE, WRITE_BUFFER_SIZE);
+                o.write(contentBytes, i * WRITE_BUFFER_SIZE, i * WRITE_BUFFER_SIZE + offset);
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("File was not written");
+                }
+            }
         } finally {
             readWriteLock.writeLock().unlock();
         }
