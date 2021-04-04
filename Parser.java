@@ -71,7 +71,7 @@ public class Parser {
         readWriteLock.writeLock().lock();
         try (FileOutputStream o = new FileOutputStream(file)) {
             byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            for (int i = 0; i < (contentBytes.length + 1) / WRITE_BUFFER_SIZE; i++) {
+            for (int i = 0; i < (contentBytes.length + WRITE_BUFFER_SIZE - 1) / WRITE_BUFFER_SIZE; i++) {
                 int offset = Math.min(contentBytes.length - i * WRITE_BUFFER_SIZE, WRITE_BUFFER_SIZE);
                 o.write(contentBytes, i * WRITE_BUFFER_SIZE, i * WRITE_BUFFER_SIZE + offset);
                 if (Thread.currentThread().isInterrupted()) {
