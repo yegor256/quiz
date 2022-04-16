@@ -32,7 +32,13 @@ public class Program implements Runnable {
                 ),
                 new FileTextStorage(
                         destination,
-                        () -> new Scanner(System.in).nextLine()
+                        new UnicodeFreeTextSource(
+                                new ScannerTextSource(
+                                        new Scanner(
+                                                System.in
+                                        )
+                                )
+                        )
                 )
         ).run();
     }
