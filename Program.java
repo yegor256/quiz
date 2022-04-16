@@ -9,7 +9,7 @@ public class Program implements Runnable {
         this.args = args;
         this.source =
                 new UnicodeFreeTextSource(
-                        new TextFile(
+                        new FileTextSource(
                                 new File("test.txt")
                         )
                 );

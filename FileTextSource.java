@@ -6,14 +6,14 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
-public final class TextFile implements TextSource {
+public final class FileTextSource implements TextSource {
   private final File file;
 
-  public TextFile(final File source) {
+  public FileTextSource(final File source) {
     this.file = source;
   }
 
-  public TextFile(final String path) {
+  public FileTextSource(final String path) {
     this(new File(path));
   }
 
