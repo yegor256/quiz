@@ -1,14 +1,14 @@
 import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Program implements Runnable {
     private final TextSource source;
     private final Storage storage;
 
-    public Program(final String[] args) {
-        final File destination = new File("test.txt");
-        this.source = new UnicodeFreeTextSource(new FileTextSource(destination));
-        this.storage = new FileTextStorage(destination, args[0]);
+    public Program(final TextSource source, final Storage storage) {
+        this.source = source;
+        this.storage = storage;
     }
 
     @Override
@@ -23,6 +23,17 @@ public class Program implements Runnable {
     }
 
     public static void main(String[] args) {
-        new Program(args).run();
+        final File destination = new File("test.txt");
+        new Program(
+                new UnicodeFreeTextSource(
+                        new FileTextSource(
+                                destination
+                        )
+                ),
+                new FileTextStorage(
+                        destination,
+                        () -> new Scanner(System.in).nextLine()
+                )
+        ).run();
     }
 }
