@@ -27,17 +27,6 @@ public final class FileTextSource implements TextSource {
     return output;
   }
 
-  public void saveContent(final String content) {
-    final FileOutputStream o = new FileOutputStream(file);
-    try {
-      for (int i = 0; i < content.length(); i += 1) {
-        o.write(content.charAt(i));
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
   @Deprecated
   public synchronized void setFile(File f) {
     throw new UnsupportedOperationException();
