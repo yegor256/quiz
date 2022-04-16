@@ -19,9 +19,4 @@ public final class UnicodeFreeTextSource implements TextSource {
         }
         return result;
     }
-
-    @Override
-    public void saveContent(final String content) {
-        origin.saveContent(content);
-    }
 }
