@@ -10,8 +10,7 @@ public class NonUnicodeUTF8FileReader implements FileReader {
     private final File file;
 
     public NonUnicodeUTF8FileReader(File file) {
-        Objects.requireNonNull(file, "file must be non-null");
-        this.file = file;
+        this.file = Objects.requireNonNull(file, "file must be non-null");
     }
 
     @Override

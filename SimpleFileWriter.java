@@ -10,10 +10,8 @@ public class SimpleFileWriter implements FileWriter {
     private final Charset charset;
 
     public SimpleFileWriter(File file, Charset charset) {
-        Objects.requireNonNull(file, "file must be non-null");
-        Objects.requireNonNull(charset, "charset must be non-null");
-        this.file = file;
-        this.charset = charset;
+        this.file = Objects.requireNonNull(file, "file must be non-null");
+        this.charset = Objects.requireNonNull(charset, "charset must be non-null");
     }
 
     @Override

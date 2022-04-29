@@ -23,14 +23,12 @@ public class ThreadSafeFileAccessor implements FileReader, FileWriter {
     }
 
     public ThreadSafeFileAccessor(FileReader reader, FileWriter writer, ReadWriteLock lock) {
-        Objects.requireNonNull(reader, "reader must be non-null");
-        Objects.requireNonNull(writer, "writer must be non-null");
+        this.reader = Objects.requireNonNull(reader, "reader must be non-null");
+        this.writer = Objects.requireNonNull(writer, "writer must be non-null");
+        this.lock = Objects.requireNonNull(lock, "lock must be non-null");
         if (!Objects.equals(reader.file(), writer.file())) {
             throw new IllegalArgumentException("reader and writer must access the same file");
         }
-        this.reader = reader;
-        this.writer = writer;
-        this.lock = lock;
     }
 
     @Override
