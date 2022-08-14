@@ -1,7 +1,5 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+
 /**
  * This class is thread safe.
  */
@@ -14,28 +12,29 @@ public class Parser {
     return file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+    StringBuilder output = new StringBuilder();
+    try(var i = new BufferedInputStream(new FileInputStream(file))) {
+      int data;
+      while ((data = i.read()) > 0) {
+        output.append((char) data);
       }
     }
-    return output;
+    return output.toString();
+  }
+  public String getContentWithoutUnicode() throws IOException {
+    StringBuilder output = new StringBuilder();
+    try(var i = new BufferedInputStream(new FileInputStream(file))) {
+      int data;
+      while ((data = i.read()) > 0) {
+        if (data < 0x80) {
+          output.append((char) data);
+        }
+      }
+    }
+    return output.toString();
   }
   public void saveContent(String content) {
-    FileOutputStream o = new FileOutputStream(file);
-    try {
+    try(var o = new BufferedOutputStream(new FileOutputStream(file))) {
       for (int i = 0; i < content.length(); i += 1) {
         o.write(content.charAt(i));
       }
