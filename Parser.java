@@ -1,43 +1,62 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
+
   private File file;
-  public synchronized void setFile(File f) {
-    file = f;
+
+  public synchronized void setFile(File file) {
+    this.file = file;
   }
+
   public synchronized File getFile() {
     return file;
   }
+
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+
+    FileInputStream fileInputStream = new FileInputStream(file);
+
+    StringBuilder output = new StringBuilder();
+
+    int amountDataToRead = fileInputStream.read();
+
+    while (amountDataToRead > 0) {
+      char fileData = (char) amountDataToRead;
+      output.append(fileData);
     }
-    return output;
+
+    fileInputStream.close();
+    return output.toString();
   }
+
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
+
+    FileInputStream fileInputStream = new FileInputStream(file);
+
+    StringBuilder resultString = new StringBuilder();
+
+    int amountDataToRead = fileInputStream.read();
+
+    while (amountDataToRead > 0) {
+      if (amountDataToRead < 0x80) {
+        char fileData = (char)amountDataToRead;
+        resultString.append(fileData);
       }
     }
-    return output;
+
+    fileInputStream.close();
+
+    return resultString.toString();
   }
-  public void saveContent(String content) {
-    FileOutputStream o = new FileOutputStream(file);
-    try {
-      for (int i = 0; i < content.length(); i += 1) {
-        o.write(content.charAt(i));
+
+  public void saveContent(String content) throws FileNotFoundException {
+
+    try(FileOutputStream fileInputStream = new FileOutputStream(file)) {
+      for (int i = 0; i < content.length(); i++) {
+        fileInputStream.write(content.charAt(i));
       }
     } catch (IOException e) {
       e.printStackTrace();
