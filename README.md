@@ -1,6 +1,6 @@
 Imagine you're assigned as a developer to this project and you
-have to make the first step in refactoring of one of these classes
-(choose one, by the language you're most comfortable in).
+have to make the first step in the refactoring of one of these classes
+(choose one, by the language you're most comfortable with).
 There are many issues in these classes, even though they compile and work.
 
 Please, submit a pull request with the changes you would recommend to
@@ -12,3 +12,5 @@ Also, if you think that something else must be refactored further,
 put your ideas into the description of the pull request.
 
 Thanks!
+
+PS. You may want to watch [this lecture](https://www.youtube.com/watch?v=aLaDDoT2v54) too.
