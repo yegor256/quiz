@@ -1,3 +1,5 @@
+[<img alt="logo" src="https://www.objectionary.com/cactus.svg" height="100px" />](https://elegantobjects.org)
+
 Imagine you're assigned as a developer to this project and you
 have to make the first step in the refactoring of one of these classes
 (choose one, by the language you're most comfortable with).
