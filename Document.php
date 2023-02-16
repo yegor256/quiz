@@ -1,45 +1,74 @@
 <?php
-class Document {
 
-    public $user;
+final class Document
+{
+    /**
+     * @var string
+     */
+    private $name;
 
-    public $name;
+    /**
+     * @var Database
+     */
+    private $db;
 
-    public function init($name, User $user) {
-        assert(strlen($name) > 5);
-        $this->user = $user;
+    /**
+     * Document constructor.
+     * @param string $name
+     * @param Database $db
+     */
+    public function __construct($name, $db)
+    {
         $this->name = $name;
+        $this->db = $db;
     }
 
-    public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+    public function title()
+    {
+        return $this->dbRowColumn(3); // third column in a row
     }
 
-    public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+    public function content()
+    {
+        return $this->dbRowColumn(6); // sixth column in a row
     }
 
-    public static function getAllDocuments() {
-        // to be implemented later
+    private function dbRowColumn($column)
+    {
+        $pattern = 'SELECT * FROM document WHERE name = "%s" LIMIT 1';
+        $sql = sprintf($pattern, $this->name);
+        $row = $this->db->query($sql);
+        return $row[$column];
     }
-
 }
 
-class User {
+final class Documents
+{
+    public function all()
+    {
+        // to be implemented later
+        return [];
+    }
+}
 
-    public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
-        return $doc;
+final class User
+{
+    private $db;
+
+    public function __construct(Database $db)
+    {
+        $this->db = $db;
     }
 
-    public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
+    public function newDocument($name)
+    {
+        return new Document($name, $this->db);
+    }
+
+    public function ownDocuments()
+    {
+        $list = [];
+        foreach ((new Documents)->all() as $doc) {
             if ($doc->user == $this)
                 $list[] = $doc;
         }
