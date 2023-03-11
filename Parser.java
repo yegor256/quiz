@@ -1,46 +1,85 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    private final int READ_BUFFER_SIZE = 4096;
+    private final int WRITE_BUFFER_SIZE = 4096;
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private volatile File file;
+
+    public void setFile(File file) {
+        readWriteLock.writeLock().lock();
+        this.file = file;
+        readWriteLock.writeLock().unlock();
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public File getFile() {
+        return file;
     }
-    return output;
-  }
-  public void saveContent(String content) {
-    FileOutputStream o = new FileOutputStream(file);
-    try {
-      for (int i = 0; i < content.length(); i += 1) {
-        o.write(content.charAt(i));
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
+
+    public String getContent() throws IOException, InterruptedException {
+        return read(false);
     }
-  }
+
+    public String getContentWithoutUnicode() throws IOException, InterruptedException {
+        return read(true);
+    }
+
+    public String read(final boolean withoutUnicode) throws IOException, InterruptedException {
+        readWriteLock.readLock().lock();
+        try (BufferedReader reader = new BufferedReader(new FileReader((file)))) {
+            long fileLength = file.length();
+            if (fileLength > Integer.MAX_VALUE) {
+                throw new IOException("File is too big for String, " + fileLength + " bytes.");
+            } else if (fileLength == 0) {
+                return "";
+            }
+            StringBuilder sb = new StringBuilder((int) fileLength);
+            char[] readBuffer = new char[READ_BUFFER_SIZE];
+            int sbIndex = 0;
+            int read;
+            do {
+                read = reader.read(readBuffer);
+                if (read > 0) {
+                    if (withoutUnicode) {
+                        for (int i = 0; i < read; i++) {
+                            char c = readBuffer[i];
+                            if (c < 0x80) {
+                                sb.insert(sbIndex++, c);
+                            }
+                        }
+                    } else {
+                        sb.append(readBuffer, 0, read);
+                    }
+                }
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("File was not read");
+                }
+            } while (read > 0);
+            return sb.toString();
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+    }
+
+    public void saveContent(String content) throws IOException, InterruptedException {
+        readWriteLock.writeLock().lock();
+        try (FileOutputStream o = new FileOutputStream(file)) {
+            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+            for (int i = 0; i < (contentBytes.length + WRITE_BUFFER_SIZE - 1) / WRITE_BUFFER_SIZE; i++) {
+                int offset = Math.min(contentBytes.length - i * WRITE_BUFFER_SIZE, WRITE_BUFFER_SIZE);
+                o.write(contentBytes, i * WRITE_BUFFER_SIZE, i * WRITE_BUFFER_SIZE + offset);
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException("File was not written");
+                }
+            }
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
+    }
 }
