@@ -1,49 +1,76 @@
 <?php
+
+class DocumentDAO {
+    private  Database $database;
+
+    public function __construct(Database $database)
+    {
+        $this->database = $database;
+    }
+
+    public function persistDocument(Document $document): bool
+    {
+        // persists $document in the database
+    }
+
+    public function getDocumentsByUser(User $user): array
+    {
+        $query = $this->database->prepareQuery('SELECT * FROM documents WHERE user_id = ?')->args($user->getId());
+        $result = $this->database->exec($query);
+        $documents = [];
+        foreach ($result->rows as $row){
+            $documents[] = new Document($row['name'], $user, $row['title'], $row['content']);
+        }
+        return $documents;
+    }
+}
+
 class Document {
 
-    public $user;
+    public User $user;
 
-    public $name;
+    public string $name;
 
-    public function init($name, User $user) {
-        assert(strlen($name) > 5);
+    public string $title;
+
+    public string $content;
+
+    public function __construct($name, User $user, $title, $content) {
+        if (strlen($name) < 5) {
+            throw new Exception("too short user name");
+        }
         $this->user = $user;
         $this->name = $name;
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+
+        return $this->title;
     }
 
     public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        return $this->content;
     }
-
-    public static function getAllDocuments() {
-        // to be implemented later
-    }
-
 }
 
 class User {
 
-    public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
+    private DocumentDao $documentDAO;
+
+    private $id;
+
+    public function makeNewDocument($name, $content, $title): Document {
+        $doc = new Document($name, $this, $title, $content);
+        $this->documentDAO->persistDocument($doc);
         return $doc;
     }
 
+    public function getId():int{
+        return $this->id;
+    }
+
     public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
-                $list[] = $doc;
-        }
-        return $list;
+        $this->documentDAO->getDocumentsByUser($this);
     }
 
 }
