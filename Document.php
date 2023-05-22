@@ -1,26 +1,31 @@
 <?php
 class Document {
+    const TITLE_COLUMN_NUMBER = 3;
 
-    public $user;
+    const CONTENT_COLUMN_NUMBER = 6;
 
-    public $name;
+    protected $user;
 
-    public function init($name, User $user) {
-        assert(strlen($name) > 5);
+    protected $name;
+
+    protected $dbInstance;
+
+    public function __construct($name, User $user)
+    {
+        assert(strlen($name) > 5, new \Exception('Document name should be more be than 5 symbols'));
         $this->user = $user;
         $this->name = $name;
+        $this->dbInstance = Database::getInstance();
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        $row = $this->dbInstance->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+        return $row[self::TITLE_COLUMN_NUMBER] ?? '';
     }
 
     public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        $row = $this->dbInstance->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+        return $row[self::CONTENT_COLUMN_NUMBER] ?? '';
     }
 
     public static function getAllDocuments() {
@@ -30,20 +35,18 @@ class Document {
 }
 
 class User {
-
     public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
+        $doc = new Document($name, $this);
         return $doc;
     }
 
     public function getMyDocuments() {
-        $list = array();
+        $list = [];
         foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
+            if ($doc->user == $this) {
                 $list[] = $doc;
+            }
         }
         return $list;
     }
-
 }
