@@ -1,46 +1,58 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import reader.PlaneReaderImpl;
+import reader.Reader;
+import reader.UnicodeReaderImpl;
+
+import java.io.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * This class is thread safe.
  */
 public class Parser {
-  private File file;
-  public synchronized void setFile(File f) {
-    file = f;
-  }
-  public synchronized File getFile() {
-    return file;
-  }
-  public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
+    private final File file;
+    private final int UNICODE_END = 0X80;
+    ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    public File getFile() {
+        return file;
     }
-    return output;
-  }
-  public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
+
+    public Parser(File file) {
+        this.file = file;
     }
-    return output;
-  }
-  public void saveContent(String content) {
-    FileOutputStream o = new FileOutputStream(file);
-    try {
-      for (int i = 0; i < content.length(); i += 1) {
-        o.write(content.charAt(i));
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
+
+    public String getContent() {
+        return commonContentReader(new PlaneReaderImpl());
     }
-  }
+
+    public String getContentWithoutUnicode() {
+        return commonContentReader(new UnicodeReaderImpl());
+    }
+
+    private String commonContentReader(Reader reader) {
+        StringBuilder output = new StringBuilder();
+        lock.readLock().lock();
+        try (BufferedInputStream i = new BufferedInputStream(new FileInputStream(file))) {
+            return reader.getContent(output, i);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            lock.readLock().unlock();
+        }
+        return "";
+    }
+
+    public void saveContent(String content) {
+        lock.writeLock().lock();
+        try (FileOutputStream o = new FileOutputStream(file)) {
+            for (int i = 0; i < content.length(); i++) {
+                o.write(content.charAt(i));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
 }
