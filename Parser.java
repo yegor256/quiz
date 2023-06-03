@@ -5,6 +5,7 @@ import java.io.IOException;
 /**
  * This class is thread safe.
  */
+ // rather having seperate methods for reading and writing , better have one.
 public class Parser {
   private File file;
   public synchronized void setFile(File f) {
@@ -13,6 +14,7 @@ public class Parser {
   public synchronized File getFile() {
     return file;
   }
+  // need to get the lock on file before reading.
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
@@ -22,6 +24,8 @@ public class Parser {
     }
     return output;
   }
+  
+  // need to get the lock on file before writing.
   public String getContentWithoutUnicode() throws IOException {
     FileInputStream i = new FileInputStream(file);
     String output = "";
