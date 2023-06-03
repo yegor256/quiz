@@ -1,0 +1,65 @@
+import java.io.*;
+
+/**
+ * This class is thread safe.
+ */
+public class Parser {
+    private File file;
+    public synchronized void setFile(File f) {
+        file = f;
+    }
+    public synchronized File getFile() {
+        return file;
+    }
+
+    private String readContent (boolean unicodeFlag) throws IOException{
+        String output = null;
+        BufferedReader br = null;
+
+        if (file != null) {
+            try {
+                br = new BufferedReader(new FileReader(file));
+                StringBuilder outputBuilder = new StringBuilder();
+                int data;
+
+                while ((data = br.read()) >0) {
+                    if (unicodeFlag) {
+                        if (data < 0x80) {
+                            outputBuilder.append(data);
+                        }
+                    } else {
+                        outputBuilder.append(data);
+                    }
+                }
+                output = outputBuilder.toString();
+            } finally {
+                if (br != null) br.close();
+            }
+        }
+        return output;
+    }
+
+    public String getContent() throws IOException {
+        return readContent(false);
+    }
+
+    public String getContentWithoutUnicode() throws IOException {
+        return readContent(true);
+    }
+
+    public void saveContent(String content) throws IOException {
+        FileOutputStream o = null;
+        try {
+            if (file != null) {
+                o = new FileOutputStream(file);
+                for (int i = 0; i < content.length(); i += 1) {
+                    o.write(content.charAt(i));
+                }
+            }
+        } finally {
+            if (o != null) {
+                o.close();
+            }
+        }
+    }
+}
