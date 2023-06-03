@@ -14,13 +14,13 @@ class Document {
     public function getTitle() {
         $db = Database::getInstance();
         $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+        return $row[2]; // third column in a row
     }
 
     public function getContent() {
         $db = Database::getInstance();
         $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+        return $row[5]; // sixth column in a row
     }
 
     public static function getAllDocuments() {
