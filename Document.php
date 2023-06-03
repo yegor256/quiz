@@ -1,32 +1,62 @@
 <?php
 class Document {
 
-    public $user;
+    private $user;
+    private $name;
+    private $title;
+    private $content;
 
-    public $name;
+    public function setUser($user) {
+      $this->$user = $user;
+    }
 
-    public function init($name, User $user) {
-        assert(strlen($name) > 5);
-        $this->user = $user;
-        $this->name = $name;
+    public function getUser() {
+      return $this->$user;
+    }
+
+    public function setName($name) {
+      $this->$name = $name;
+    }
+
+    public function getName() {
+      return $name->$name;
+    }
+
+    public function setTitle($title) {
+      $this->$title = $title;
     }
 
     public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+      return $title->$title;
+    }
+
+    public function setContent($content) {
+      $this->$content = $content;
     }
 
     public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+      return $this->$content;
     }
 
+    public function init($name, User $user) {
+
+        assert(strlen($name) > 5);
+
+        $this->user = $user;
+        $this->name = $name;
+
+        $db = Database::getInstance();
+        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
+
+        if (!empty($row)) {
+            $this->title = $row["title"];
+            $this->content = $row["content"];
+        }
+
+    }
     public static function getAllDocuments() {
         // to be implemented later
     }
-
 }
 
 class User {
@@ -34,16 +64,17 @@ class User {
     public function makeNewDocument($name) {
         $doc = new Document();
         $doc->init($name, $this);
+
         return $doc;
     }
 
     public function getMyDocuments() {
         $list = array();
         foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
+            if ($doc->getUser() == $this)
                 $list[] = $doc;
         }
+
         return $list;
     }
-
 }
