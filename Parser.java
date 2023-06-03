@@ -2,11 +2,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import org.apache.commons.io.IOUtils;
 /**
  * This class is thread safe.
  */
 public class Parser {
   private File file;
+  private final int SIZE = 65536;
+  
   public synchronized void setFile(File f) {
     file = f;
   }
@@ -15,11 +18,9 @@ public class Parser {
   }
   public String getContent() throws IOException {
     FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
+    String output = new String(IOUtils.toByteArray(i));
+    
+    i.close();
     return output;
   }
   public String getContentWithoutUnicode() throws IOException {
@@ -31,6 +32,8 @@ public class Parser {
         output += (char) data;
       }
     }
+    
+    i.close();
     return output;
   }
   public void saveContent(String content) {
