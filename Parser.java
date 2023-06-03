@@ -20,6 +20,8 @@ public class Parser {
     while ((data = i.read()) > 0) {
       output += (char) data;
     }
+    i.close();
+
     return output;
   }
   public String getContentWithoutUnicode() throws IOException {
@@ -31,6 +33,7 @@ public class Parser {
         output += (char) data;
       }
     }
+    i.close();
     return output;
   }
   public void saveContent(String content) {
@@ -42,5 +45,6 @@ public class Parser {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    o.close();
   }
 }
