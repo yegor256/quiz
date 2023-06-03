@@ -1,48 +1,70 @@
 <?php
 class Document {
 
-    public $user;
+    // why to have the entire $user for a model like this. I prefer to use an id once we have a Model for User also
 
-    public $name;
+    // why public?
+    private $user_id;
+    private $name;
 
-    public function init($name, User $user) {
+    // why not to make a constructor?
+    function Document($name, $user_id) {
         assert(strlen($name) > 5);
-        $this->user = $user;
+        $this->user_id = $user_id;
         $this->name = $name;
     }
 
-    public function getTitle() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[3]; // third column in a row
+    // two problems I see with this query
+    // 1. query the whole document to use only the title is not good
+    // 2. using strings in WHERE clause is not good also
+    // we could try to something like
+    public function getTitle($doc_id) {
+        $sql = 'SELECT title FROM document WHERE document.id = $doc_id LIMIT 1';
+        $result = mysql_query($sql);
+        return mysql_fetch_object($result);
     }
 
-    public function getContent() {
-        $db = Database::getInstance();
-        $row = $db->query('SELECT * FROM document WHERE name = "' . $this->name . '" LIMIT 1');
-        return $row[6]; // sixth column in a row
+    // same here
+    public function getContent($doc_id) {
+        $sql = 'SELECT content FROM document WHERE document.id = $doc_id LIMIT 1';
+        $result = mysql_query($sql);
+        return mysql_fetch_object($result);
     }
 
+    // this method could be usefull but not for the needs inside the class User (eg.: User::getMyDocuments())
+    // my suggestion goes below
     public static function getAllDocuments() {
         // to be implemented later
+    }
+
+    // I think somethink like this is much better than to get all the documents inside the database and then 
+    // check if each one is from a specific user 
+    public function getDocumentsFromUser($user_id) {
+        $list = array();
+        // query only the documents of the specified user
+
+        return $list;
     }
 
 }
 
 class User {
 
+    private $id;
+    private $user_name;
+    // etc...
+
+    // constructor
+
+    //
     public function makeNewDocument($name) {
-        $doc = new Document();
-        $doc->init($name, $this);
+        $doc = new Document($name, $this->id);
         return $doc;
     }
 
+    // to get only my documents is better to delegate to the Document class passing my user id
     public function getMyDocuments() {
-        $list = array();
-        foreach (Document::getAllDocuments() as $doc) {
-            if ($doc->user == $this)
-                $list[] = $doc;
-        }
+        $list = Document::getDocumentsFromUser($this->id);
         return $list;
     }
 
