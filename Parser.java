@@ -14,24 +14,10 @@ public class Parser {
     return file;
   }
   public String getContent() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      output += (char) data;
-    }
-    return output;
+    return getContent(true);
   }
   public String getContentWithoutUnicode() throws IOException {
-    FileInputStream i = new FileInputStream(file);
-    String output = "";
-    int data;
-    while ((data = i.read()) > 0) {
-      if (data < 0x80) {
-        output += (char) data;
-      }
-    }
-    return output;
+    return getContent(false);
   }
   public void saveContent(String content) {
     FileOutputStream o = new FileOutputStream(file);
@@ -43,4 +29,19 @@ public class Parser {
       e.printStackTrace();
     }
   }
+  private String getContent(boolean withUnicode) {
+    FileInputStream i = new FileInputStream(file);
+    String output = "";
+    int data;
+    while ((data = i.read()) > 0) {
+      if (withUnicode) {
+        output += (char) data;
+      } else if (data < 0x80) {
+        output += (char) data;
+      }
+    }
+    i.close();
+    return output;
+  }
 }
+
